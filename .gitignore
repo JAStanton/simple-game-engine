@@ -1,0 +1,8 @@
+node_modules/*
+.DS_Store
+*.report.txt
+.sass-cache/*
+frontend/static/css_compiled/*
+frontend/static/js_compiled/*
+*~
+/pkg
