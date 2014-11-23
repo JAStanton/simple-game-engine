@@ -3,7 +3,7 @@ goog.provide('game.core.math.collision.helper');
 
 goog.require('game.core.helper');
 goog.require('game.core.math.Vector');
-goog.require('game.mixins.Shape');
+goog.require('game.mixins.UnitSquare');
 
 
 game.core.helper.scope(function() {
@@ -79,7 +79,7 @@ game.core.helper.scope(function() {
    *
    * @type {Polygon}
    */
-  var UNIT_SQUARE = new game.mixins.Shape().setRectangle(0, 0, 1, 1);
+  var UNIT_SQUARE = new game.mixins.UnitSquare;
 
 
   /**

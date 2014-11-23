@@ -1,6 +1,8 @@
 goog.provide('game.mixins.Shape');
 goog.provide('game.mixins.Shape.Type');
+goog.provide('game.mixins.UnitSquare');
 
+goog.require('game.core.Entity');
 goog.require('game.core.math.Vector');
 
 
@@ -12,6 +14,7 @@ goog.require('game.core.math.Vector');
  * This was stolen and modified from SAT.js: https://github.com/jriecken/sat-js
  *
  * @constructor
+ * @extends {game.core.Entity}
  */
 game.mixins.Shape = function() {};
 
@@ -313,3 +316,18 @@ game.mixins.Shape.prototype.draw = function() {
     circle.setAttributeNS(null, 'fill', this.fillColor_);
   }
 };
+
+
+
+/**
+ * Unit square polygon used for polygon hit detection.
+ *
+ * @extends {game.core.Entity}
+ * @constructor
+ */
+game.mixins.UnitSquare = function() {
+  game.mixins.UnitSquare.base(this, 'constructor');
+  this.setPosition(new game.core.math.Vector());
+  this.setSize(1, 1);
+};
+game.core.helper.inherit(game.mixins.UnitSquare, game.core.Entity);

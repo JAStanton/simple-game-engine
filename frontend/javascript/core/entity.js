@@ -120,7 +120,7 @@ game.core.Entity.prototype.getPosition = function() {
  * Sets the position and updates the style.
  *
  * @param {game.core.math.Vector} position
- * @return {!game.mixins.Shape}
+ * @return {!game.core.Entity}
  */
 game.core.Entity.prototype.setPosition = function(position) {
   this.position_ = position.clone();
@@ -159,7 +159,7 @@ game.core.Entity.prototype.getScale = function() {
  * @param {number} width
  * @param {number} height
  */
-game.mixins.Shape.prototype.setSize = function(width, height) {
+game.core.Entity.prototype.setSize = function(width, height) {
   this.width = width;
   this.height = height;
   var position = this.getPosition();
@@ -176,7 +176,7 @@ game.mixins.Shape.prototype.setSize = function(width, height) {
  *
  * @return {number}
  */
-game.mixins.Shape.prototype.getWidth = function() {
+game.core.Entity.prototype.getWidth = function() {
   return this.width;
 };
 
@@ -186,7 +186,7 @@ game.mixins.Shape.prototype.getWidth = function() {
  *
  * @return {number}
  */
-game.mixins.Shape.prototype.getHeight = function() {
+game.core.Entity.prototype.getHeight = function() {
   return this.height;
 };
 
