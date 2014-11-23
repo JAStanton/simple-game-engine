@@ -428,7 +428,7 @@ _.prototype.countBy = function(opt_iterator, opt_context) {};
  * @param {*} obj
  * @param {Function|string=} opt_iterator
  * @param {*=} opt_context
- * @return {!number}
+ * @return {number}
  */
 _.sortedIndex = function(list, obj, opt_iterator, opt_context) {};
 
@@ -438,7 +438,7 @@ _.sortedIndex = function(list, obj, opt_iterator, opt_context) {};
  * @param {*} obj
  * @param {Function|string=} opt_iterator
  * @param {*=} opt_context
- * @return {!number}
+ * @return {number}
  */
 _.prototype.sortedIndex = function(obj, opt_iterator, opt_context) {};
 
@@ -725,7 +725,7 @@ _.prototype.object = function(opt_values) {};
  * @param {Array|Arguments} array
  * @param {*} item
  * @param {boolean|number=} opt_isSorted
- * @return {!number}
+ * @return {number}
  */
 _.indexOf = function(array, item, opt_isSorted) {};
 
@@ -734,7 +734,7 @@ _.indexOf = function(array, item, opt_isSorted) {};
  * Functional-style notation
  * @param {*} item
  * @param {boolean|number=} opt_isSorted
- * @return {!number}
+ * @return {number}
  */
 _.prototype.indexOf = function(item, opt_isSorted) {};
 
@@ -744,7 +744,7 @@ _.prototype.indexOf = function(item, opt_isSorted) {};
  * @param {Array|Arguments} array
  * @param {*} value
  * @param {*=} opt_fromIndex
- * @return {!number}
+ * @return {number}
  */
 _.lastIndexOf = function(array, value, opt_fromIndex) {};
 
@@ -753,7 +753,7 @@ _.lastIndexOf = function(array, value, opt_fromIndex) {};
  * Functional-style notation
  * @param {*} value
  * @param {*=} opt_fromIndex
- * @return {!number}
+ * @return {number}
  */
 _.prototype.lastIndexOf = function(value, opt_fromIndex) {};
 
