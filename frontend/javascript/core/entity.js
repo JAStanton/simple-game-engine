@@ -2,12 +2,12 @@ goog.provide('game.core.Entity');
 
 goog.require('game.core.helper');
 goog.require('game.core.math.Vector');
-goog.require('game.mixins.Shape.Type');
 
 
 
 /**
- * An entity. This can be a player, enemy, object or a thing.
+ * An entity. This can be a player, enemy, object or anything with a size,
+ * position, scale.
  *
  * @param {game.core.math.Vector=} opt_position
  * @param {?number=} opt_w The width of the box.
@@ -16,17 +16,26 @@ goog.require('game.mixins.Shape.Type');
  * @constructor
  */
 game.core.Entity = function(opt_position, opt_w, opt_h) {
-  /**
-   * If the entity is dirty it needs to be redrawn.
-   * @type {boolean}
-   */
-  this.isDirty = true;
-  /** @private {string} */
-  this.id_ = 'entity-' + game.core.Entity.ID_COUNT++;
+  /** @type {number} */
+  this.width = 0;
+  /** @type {number} */
+  this.height = 0;
+  /** @type {number} */
+  this.right = 0;
+  /** @type {number} */
+  this.bottom = 0;
+  /** @private {boolean} */
+  this.isDirty_ = false;
   /** @private {boolean} */
   this.isActive_ = true;
   /** @private {boolean} */
-  this.isInDom_ = false;
+  this.inDom_ = false;
+  /** @private {!game.core.math.Vector} */
+  this.position_ = new game.core.math.Vector();
+  /** @private {!game.core.math.Vector} */
+  this.scale_ = new game.core.math.Vector(1, 1);
+  /** @private {string} */
+  this.id_ = 'entity-' + game.core.Entity.ID_COUNT++;
   /** @type {!Element} */
   this.el = document.createElement('span');
   this.el.id = this.id_;
@@ -60,6 +69,129 @@ game.core.Entity.ID_COUNT = 0;
 
 
 /**
+ * Initialized the entity.
+ */
+game.core.Entity.prototype.init = function() {};
+
+
+/**
+ * Adds mixins to this entity.
+ *
+ * @param {...string} var_args Variable number of mixin names.
+ */
+game.core.Entity.prototype.mixin = function(var_args) {
+  game.core.helper.mixin(this, arguments);
+};
+
+
+/**
+ * Sets the dirty bit.
+ *
+ * @param {boolean} bool True will force the entity to be re-drawn on
+ *     {@code #update}.
+ */
+game.core.Entity.prototype.setDirty = function(bool) {
+  this.dirty_ = bool;
+};
+
+
+/**
+ * Gets the dirty bit.
+ *
+ * @return {boolean} bool True will force the entity to be re-drawn on
+ *     {@code #update}.
+ */
+game.core.Entity.prototype.isDirty = function() {
+  return this.dirty_;
+};
+
+
+/**
+ * Returns a copy to the position of the entity.
+ *
+ * @return {!game.core.math.Vector}
+ */
+game.core.Entity.prototype.getPosition = function() {
+  return this.position_.clone();
+};
+
+
+/**
+ * Sets the position and updates the style.
+ *
+ * @param {game.core.math.Vector} position
+ * @return {!game.mixins.Shape}
+ */
+game.core.Entity.prototype.setPosition = function(position) {
+  this.position_ = position.clone();
+
+  this.right = this.position_.x + this.getWidth();
+  this.bottom = this.position_.y + this.getHeight();
+
+  this.setDirty(true);
+  return this;
+};
+
+
+/**
+ * Gets the scale of the entity.
+ *
+ * @param {game.core.math.Vector} scale
+ */
+game.core.Entity.prototype.setScale = function(scale) {
+  this.scale_ = scale;
+};
+
+
+/**
+ * Sets the scale of the entity.
+ *
+ * @return {1game.core.math.Vector}
+ */
+game.core.Entity.prototype.getScale = function() {
+  return this.scale_;
+};
+
+
+/**
+ * For rectangles. Sets the size of the entity.
+ *
+ * @param {number} width
+ * @param {number} height
+ */
+game.mixins.Shape.prototype.setSize = function(width, height) {
+  this.width = width;
+  this.height = height;
+  var position = this.getPosition();
+  this.right = position.x + this.width;
+  this.bottom = position.y + this.height;
+  this.el.style.width = this.width + 'px';
+  this.el.style.height = this.height + 'px';
+  this.setDirty(true);
+};
+
+
+/**
+ * For rectangles.
+ *
+ * @return {number}
+ */
+game.mixins.Shape.prototype.getWidth = function() {
+  return this.width;
+};
+
+
+/**
+ * For rectangles.
+ *
+ * @return {number}
+ */
+game.mixins.Shape.prototype.getHeight = function() {
+  return this.height;
+};
+
+
+/**
  * Iterates through all the active entities.
  *
  * @param {function()} callback
@@ -87,8 +219,8 @@ game.core.Entity.prototype.isActive = function() {
  *
  * @return {boolean}
  */
-game.core.Entity.prototype.isInDom = function() {
-  return this.isInDom_;
+game.core.Entity.prototype.inDom = function() {
+  return this.inDom_;
 };
 
 
@@ -123,7 +255,7 @@ game.core.Entity.prototype.attach = function(parent) {
 
   if (!document.getElementById(this.id_)) {
     parent.appendChild(this.el);
-    this.isInDom_ = true;
+    this.inDom_ = true;
   } else {
     console.warn('Attempted to attach dom element multiple times:', this.el);
   }
@@ -137,7 +269,7 @@ game.core.Entity.prototype.attach = function(parent) {
 game.core.Entity.prototype.detach = function() {
   if (this.el.parentNode) {
     this.el.parentNode.removeChild(this.el);
-    this.isInDom_ = false;
+    this.inDom_ = false;
   } else {
     console.warn(
         'Attempted to remove dom element when it has no parent', this.el);
@@ -163,51 +295,9 @@ game.core.Entity.prototype.destroyEventListeners = function() {};
  * update it will.
  */
 game.core.Entity.prototype.draw = function() {
-  if (!this.isDirty) return;
-
-  this.isDirty = false;
-  if (this.type == game.mixins.Shape.Type.RECTANGLE) {
-    return;
-  }
-
-  // TODO(jstanton): cleanup this mess.
-
-  var svgContainer = this.el.getElementsByClassName('svg-container');
-  var svg;
-  if (svgContainer.length == 1) {
-    svgContainer = svgContainer[0];
-    svg = svgContainer.children[0];
-  } else {
-    svgContainer = document.createElement('span');
-    svgContainer.classList.add('svg-container');
-    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svgContainer.appendChild(svg);
-    this.el.appendChild(svgContainer);
-  }
-
-  if (this.type == game.mixins.Shape.Type.POLYGON) {
-    var path = svg.getElementsByTagName('path');
-    if (path.length == 1) {
-      path = path[0];
-    } else {
-      path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      svg.appendChild(path);
-    }
-    path.setAttributeNS(null, 'd', game.core.helper.poly2path(this));
-    path.setAttributeNS(null, 'fill', this.fillColor);
-  }
-
-  if (this.type == game.mixins.Shape.Type.CIRCLE) {
-    var circle = svg.getElementsByTagName('circle');
-    if (circle.length == 1) {
-      circle = circle[0];
-    } else {
-      circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      svg.appendChild(circle);
-    }
-    circle.setAttributeNS(null, 'r', this.r);
-    circle.setAttributeNS(null, 'cx', this.r);
-    circle.setAttributeNS(null, 'cy', this.r);
-    circle.setAttributeNS(null, 'fill', this.fillColor);
-  }
+  if (!this.isDirty()) return;
+  this.setDirty(false);
+  var position = this.getPosition();
+  var scale = this.getScale();
+  game.core.helper.updateTranslate(this.el, position, scale);
 };

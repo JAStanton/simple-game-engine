@@ -14,6 +14,7 @@ game.core.helper.global = this;
  * uncompiled code - in compiled code the calls will be inlined and the aliases
  * applied.  In uncompiled code the function is simply run since the aliases as
  * written are valid JavaScript.
+ *
  * @param {function()} fn Function to call.  This function can contain aliases
  *     to namespaces (e.g. "var dom = goog.dom") or classes
  *     (e.g. "var Timer = goog.Timer").
@@ -45,52 +46,32 @@ game.core.helper.poly2path = function(polygon) {
 
 
 /**
- * Updates the transform on a given element.
+ * Updates the translate transform on a given element. If no position or scale
+ * is given this well remove the translate on the element. If the scale is 1,1
+ * it will not update add the transform because that is default.
+ *
  * @param {Element} element
- * @param {string} transform
+ * @param {game.core.math.Vector=} opt_position
+ * @param {game.core.math.Vector=} opt_scale
  */
-game.core.helper.updateTransform = function(element, transform) {
-  if (!_.isObject(element)) return;
-  var style = element.style;
-  if (!_.isObject(style)) return;
-  style.webkitTransform = transform;
-  style.MozTransform = transform;
-  style.msTransform = transform;
-  style.OTransform = transform;
-  style.transform = transform;
-};
-
-
-/**
- * Updates the translate transform on a given element.
- * @param {Element} element
- * @param  {!game.core.math.Vector} position
- * @param  {number} renderScale
- */
-game.core.helper.updateTranslate = function(element, position, renderScale) {
+game.core.helper.updateTranslate = function(element, opt_position, opt_scale) {
   var transform = '';
-  if (_.isObject(position)) {
-    transform += 'translate(' +
-        position.x.toFixed(1) + 'px, ' +
-        position.y.toFixed(1) + 'px) ';
+  if (opt_position) {
+    transform = 'translate(' +
+        opt_position.x.toFixed(1) + 'px, ' +
+        opt_position.y.toFixed(1) + 'px) ';
   }
-  game.core.helper.updateTransform(element, transform);
 
-  var scaleTransform = '';
-  var scaleElement = element.getElementsByClassName('svg-container');
-  if (!_.isObject(renderScale)) {
-    return;
+  if (opt_scale && !(opt_scale.x == 1 && opt_scale.y == 1)) {
+    transform += ' scaleX(' + opt_scale.x + ')';
+    transform += ' scaleY(' + opt_scale.y + ')';
   }
-  if (_.isNumber(renderScale.x)) {
-    scaleTransform += ' scaleX(' + renderScale.x + ')';
-  }
-  if (_.isNumber(renderScale.y)) {
-    scaleTransform += ' scaleY(' + renderScale.y + ')';
-  }
-  if (_.isObject(scaleElement)) {
-    scaleElement = scaleElement[0];
-  }
-  game.core.helper.updateTransform(scaleElement, scaleTransform);
+
+  element.style.webkitTransform = transform;
+  element.style.MozTransform = transform;
+  element.style.msTransform = transform;
+  element.style.OTransform = transform;
+  element.style.transform = transform;
 };
 
 
@@ -190,7 +171,12 @@ game.core.helper.mixin = function(klass) {
 
   _(mixins).each(function(mixin) {
     if (_.isString(mixin)) {
+      var mixinName = mixin;
       mixin = game.core.helper.mixins[mixin];
+      if (!_.isObject(mixin)) {
+        console.warn('No mixin registered as:', mixinName);
+        return;
+      }
     }
     _(mixin).each(function(value, key) {
       if (_.isFunction(value)) {

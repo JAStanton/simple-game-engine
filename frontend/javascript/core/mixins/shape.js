@@ -7,15 +7,7 @@ goog.require('game.core.math.Vector');
 
 /**
  * Represents a *convex* shape with any number of points (specified in
- * counter-clockwise order)
- *
- * Note: If you manually change the `points`, `angle`, or `offset` properties,
- * you **must** call `recalc` afterwards so that the changes get applied
- * correctly.
- *
- * Create a new polygon, passing in a position vector, and an array of points
- * (represented by vectors relative to the position vector). If no position is
- * passed in, the position of the polygon will be `(0,0)`.
+ * counter-clockwise order).
  *
  * This was stolen and modified from SAT.js: https://github.com/jriecken/sat-js
  *
@@ -43,8 +35,26 @@ game.mixins.Shape.Type = {
 
 
 /**
+ * Initializes mixin.
+ */
+game.mixins.Shape.prototype.init = function() {
+  /** @private {!game.mixins.Shape.Type} */
+  this.type_;
+  /** @private {Array.<!game.core.math.Vector>} */
+  this.points_;
+  /** @private {number} */
+  this.angle_ = 0;
+  /** @private {game.core.math.Vector} */
+  this.offset_ = new game.core.math.Vector();
+  /** @private {number} */
+  this.radius_;
+  /** @private {string} */
+  this.fillColor_ = 'black';
+};
+
+
+/**
  * Creates a convex pologyon.
- *
  *
  * @param {game.core.math.Vector=} opt_pos A vector representing the origin of
  *     the polygon. (all other points are relative to this one)
@@ -54,11 +64,13 @@ game.mixins.Shape.Type = {
  * @return {!game.mixins.Shape} This for chaining.
  */
 game.mixins.Shape.prototype.setPolygon = function(opt_pos, opt_points) {
-  this.type = game.mixins.Shape.Type.POLYGON;
-  this.pos = opt_pos || new game.core.math.Vector();
-  this.points = opt_points || [];
-  this.angle = 0;
-  this.offset = new game.core.math.Vector();
+  this.type_ = game.mixins.Shape.Type.POLYGON;
+  if (opt_pos) {
+    this.setPosition(opt_pos);
+  }
+  this.points_ = opt_points || [];
+  this.angle_ = 0;
+  this.offset_ = new game.core.math.Vector();
   this.recalc();
 
   return this;
@@ -68,6 +80,7 @@ game.mixins.Shape.prototype.setPolygon = function(opt_pos, opt_points) {
 /**
  * Creates a circle.
  *
+ * TODO(jstanton): Does position represent center? or top left?
  *
  * @param {game.core.math.Vector=} opt_pos A vector representing the position of
  *     the center of the circle.
@@ -75,9 +88,11 @@ game.mixins.Shape.prototype.setPolygon = function(opt_pos, opt_points) {
  * @return {!game.mixins.Shape} This for chaining.
  */
 game.mixins.Shape.prototype.setCircle = function(opt_pos, opt_r) {
-  this.type = game.mixins.Shape.Type.CIRCLE;
-  this.pos = opt_pos || new game.core.math.Vector();
-  this.r = opt_r || 0;
+  this.type_ = game.mixins.Shape.Type.CIRCLE;
+  if (opt_pos) {
+    this.setPosition(opt_pos);
+  }
+  this.radius_ = opt_r || 0;
 
   return this;
 };
@@ -86,26 +101,18 @@ game.mixins.Shape.prototype.setCircle = function(opt_pos, opt_r) {
 /**
  * Sets the dimensions of the rectangle.
  *
- * @param {number|string} x A number for px and a string for percent.
- * @param {number|string} y A number for px and a string for percent.
- * @param {number|string} width A number for px and a string for percent.
- * @param {number|string} height A number for px and a string for percent.
- * @param {Element=|game.core.Entity=} opt_relativeTo
- * @param {number=} opt_maxWidth
- * @param {number=} opt_maxHeight
- * @param {number=} opt_minWidth
- * @param {number=} opt_minHeight
+ * @param {game.core.math.Vector} position A vector representing the position of
+ *     the center of the rectanctle.
+ * @param {number} width
+ * @param {number} height
  * @return {!game.mixins.Shape} This for chaining.
  */
-game.mixins.Shape.prototype.setRectangle = function(x, y, width, height,
-    opt_relativeTo, opt_maxWidth, opt_maxHeight, opt_minWidth, opt_minHeight) {
-  this.type = game.mixins.Shape.Type.RECTANGLE;
-  this.angle = 0;
-  this.offset = new game.core.math.Vector();
-  // these call makes the entity dirty.
-  this.setSize(width, height, opt_relativeTo, opt_maxWidth, opt_maxHeight,
-      opt_minWidth, opt_minHeight);
-  this.setPosition(x, y, opt_relativeTo);
+game.mixins.Shape.prototype.setRectangle = function(position, width, height) {
+  this.type_ = game.mixins.Shape.Type.RECTANGLE;
+  this.angle_ = 0;
+  this.offset_ = new game.core.math.Vector();
+  this.setSize(width, height);
+  this.setPosition();
 
   this.recalc();
   return this;
@@ -123,7 +130,7 @@ game.mixins.Shape.prototype.setRectangle = function(x, y, width, height,
  * @return {!game.mixins.Shape} This for chaining.
  */
 game.mixins.Shape.prototype.setPoints = function(opt_points) {
-  this.points = opt_points;
+  this.points_ = opt_points;
   this.recalc();
   return this;
 };
@@ -138,7 +145,7 @@ game.mixins.Shape.prototype.setPoints = function(opt_points) {
  * @return {!game.mixins.Shape} This for chaining.
  */
 game.mixins.Shape.prototype.setAngle = function(angle) {
-  this.angle = angle;
+  this.angle_ = angle;
   this.recalc();
   return this;
 };
@@ -154,7 +161,7 @@ game.mixins.Shape.prototype.setAngle = function(angle) {
  * @return {!game.mixins.Shape} This for chaining.
  */
 game.mixins.Shape.prototype.setOffset = function(offset) {
-  this.offset = offset;
+  this.offset_ = offset;
   this.recalc();
   return this;
 };
@@ -162,7 +169,7 @@ game.mixins.Shape.prototype.setOffset = function(offset) {
 
 /**
  * Rotates this polygon counter-clockwise around the origin of *its local
- * coordinate system* (i.e. `pos`).
+ * coordinate system* (i.e. `position`).
  *
  * Note: This changes the **original** points (so any `angle` will be applied
  * on top of this rotation) Note: This calls `recalc` for you.
@@ -171,7 +178,7 @@ game.mixins.Shape.prototype.setOffset = function(offset) {
  * @return {!game.mixins.Shape} This for chaining.
  */
 game.mixins.Shape.prototype.rotate = function(angle) {
-  var points = this.points;
+  var points = this.points_;
   var len = points.length;
   for (var i = 0; i < len; i++) {
     points[i].rotate(angle);
@@ -183,10 +190,10 @@ game.mixins.Shape.prototype.rotate = function(angle) {
 
 /**
  * Translates the points of this polygon by a specified amount relative to the
- * origin of *its own coordinate system* (i.e. `pos`). This is most useful to
- * change the "center point" of a polygon. If you just want to move the whole
- * polygon, change the coordinates of `pos`. Note: This changes the
- * **original** points (so any `offset` will be applied on top of this
+ * origin of *its own coordinate system* (i.e. `position`). This is most
+ * useful to change the "center point" of a polygon. If you just want to move
+ * the whole polygon, change the coordinates of `position`. Note: This changes
+ * the **original** points (so any `offset` will be applied on top of this
  * translation) Note: This calls `recalc` for you.
  *
  * @param {number} x The horizontal amount to translate.
@@ -194,7 +201,7 @@ game.mixins.Shape.prototype.rotate = function(angle) {
  * @return {!game.mixins.Shape} This for chaining.
  */
 game.mixins.Shape.prototype.translate = function(x, y) {
-  var points = this.points;
+  var points = this.points_;
   var len = points.length;
   for (var i = 0; i < len; i++) {
     points[i].x += x;
@@ -202,134 +209,6 @@ game.mixins.Shape.prototype.translate = function(x, y) {
   }
   this.recalc();
   return this;
-};
-
-
-/**
- * Returns a reference to the position of the entity.
- *
- * @return {!game.core.math.Vector}
- */
-game.mixins.Shape.prototype.getPosition = function() {
-  return this.pos;
-};
-
-
-/**
- * Sets the position and updates the style.
- *
- * @param {number|string} x X-coord or sometimes referred to as left.
- * @param {number|string} y Y-coord or sometimes referred to as top.
- * @param {Element=|game.mixins.Shape=} opt_relativeTo
- * @return {!game.mixins.Shape}
- */
-game.mixins.Shape.prototype.setPosition = function(x, y, opt_relativeTo) {
-  if (_.isString(x) && opt_relativeTo) {
-    x = opt_relativeTo.getWidth() * parseInt(x, 10) / 100;
-  }
-
-  if (_.isString(y) && opt_relativeTo) {
-    y = opt_relativeTo.getHeight() * parseInt(y, 10) / 100;
-  }
-
-  if (this.pos) {
-    this.pos.x = x;
-    this.pos.y = y;
-  } else {
-    this.pos = new game.core.math.Vector(x, y);
-  }
-
-  // Rectangle specifc.
-  if (_.isNumber(x) && _.isNumber(y)) {
-    this.right = x + this.getWidth();
-    this.bottom = y + this.getHeight();
-  }
-
-  if (this.el) {
-    game.core.helper.updateTranslate(this.el, this.pos, this.renderScale);
-  }
-
-  this.isDirty = true;
-
-  return this;
-};
-
-
-/**
- * For rectangles. Sets the size of the entity.
- *
- * @param {number|string} width
- * @param {number|string} height
- * @param {Element=|game.core.Entity=} opt_relativeTo
- * @param {number=} opt_maxWidth
- * @param {number=} opt_maxHeight
- * @param {number=} opt_minWidth
- * @param {number=} opt_minHeight
- */
-game.mixins.Shape.prototype.setSize = function(width, height, opt_relativeTo,
-    opt_maxWidth, opt_maxHeight, opt_minWidth, opt_minHeight) {
-
-  if (_.isString(width) && opt_relativeTo) {
-    width = opt_relativeTo.getWidth() * parseInt(width, 10) / 100;
-    if (_.isNumber(opt_maxWidth)) {
-      width = Math.min(opt_maxWidth, width);
-    }
-    if (_.isNumber(opt_minWidth)) {
-      width = Math.max(opt_minWidth, width);
-    }
-  }
-
-  if (_.isString(height) && opt_relativeTo) {
-    height = opt_relativeTo.getHeight() * parseInt(height, 10) / 100;
-    if (_.isNumber(opt_maxHeight)) {
-      height = Math.min(opt_maxHeight, height);
-    }
-    if (_.isNumber(opt_minHeight)) {
-      height = Math.max(opt_minHeight, height);
-    }
-  }
-
-  this.width = width;
-  this.height = height;
-
-  var position = this.getPosition();
-  if (!position) {
-    position = this.position = new game.core.math.Vector();
-  }
-  this.right = position.x + this.width;
-  this.bottom = position.y + this.height;
-
-  this.points = [
-    new game.core.math.Vector(),
-    new game.core.math.Vector(this.width, 0),
-    new game.core.math.Vector(this.width, this.height),
-    new game.core.math.Vector(0, this.height)
-  ];
-
-  if (this.el) {
-    this.el.style.width = this.width + 'px';
-    this.el.style.height = this.height + 'px';
-  }
-};
-
-
-/**
- * For rectangles.
- *
- * @return {number}
- */
-game.mixins.Shape.prototype.getWidth = function() {
-  return this.width;
-};
-
-
-/**
- * For rectangles.
- *
- * @return {number}
- */
-game.mixins.Shape.prototype.getHeight = function() {
-  return this.height;
 };
 
 
@@ -358,9 +237,9 @@ game.mixins.Shape.prototype.recalc = function() {
   // point.
   var normals = this.normals = [];
   // Copy the original points array and apply the offset/angle
-  var points = this.points || [];
-  var offset = this.offset || 0;
-  var angle = this.angle || 0;
+  var points = this.points_ || [];
+  var offset = this.offset_ || 0;
+  var angle = this.angle_ || 0;
   var len = points.length;
   for (i = 0; i < len; i++) {
     var calcPoint = points[i].clone();
@@ -385,4 +264,46 @@ game.mixins.Shape.prototype.recalc = function() {
   this.isDirty = true;
 
   return this;
+};
+
+
+/**
+ * Draws the entity.
+ */
+game.mixins.Shape.prototype.draw = function() {
+  if (!this.isDirty()) return;
+
+  var svg = this.el.getElementsByTagName('svg');
+  if (svg.length == 1) {
+    svg = svg[0];
+  } else {
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    this.el.appendChild(svg);
+  }
+
+  if (this.type_ == game.mixins.Shape.Type.POLYGON) {
+    var path = svg.getElementsByTagName('path');
+    if (path.length == 1) {
+      path = path[0];
+    } else {
+      path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      svg.appendChild(path);
+    }
+    path.setAttributeNS(null, 'd', game.core.helper.poly2path(this));
+    path.setAttributeNS(null, 'fill', this.fillColor_);
+  }
+
+  if (this.type_ == game.mixins.Shape.Type.CIRCLE) {
+    var circle = svg.getElementsByTagName('circle');
+    if (circle.length == 1) {
+      circle = circle[0];
+    } else {
+      circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      svg.appendChild(circle);
+    }
+    circle.setAttributeNS(null, 'r', this.radius_);
+    circle.setAttributeNS(null, 'cx', this.radius_);
+    circle.setAttributeNS(null, 'cy', this.radius_);
+    circle.setAttributeNS(null, 'fill', this.fillColor_);
+  }
 };

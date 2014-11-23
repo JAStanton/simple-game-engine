@@ -103,15 +103,3 @@ game.core.Main.prototype.physicsLoop = function() {
  * @param {numbet} tick
  */
 game.core.Main.prototype.tick = function(tick) {};
-
-
-/**
- * Adds entities.
- */
-game.core.Main.prototype.addEntities = function() {};
-
-
-/**
- * Removes an entity.
- */
-game.core.Main.prototype.removeEntities = function() {};
