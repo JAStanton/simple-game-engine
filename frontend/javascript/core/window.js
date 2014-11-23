@@ -10,21 +10,24 @@ goog.require('game.core.helper');
  * dimensions.
  *
  * @constructor
- * @extends {game.core.Entity}
+ * @extends {!game.core.Entity}
  */
 game.core.Window = function() {
   if (game.core.Window.prototype._singletonInstance) {
     return game.core.Window.prototype._singletonInstance;
   }
   game.core.Window.prototype._singletonInstance = this;
+  game.core.Window.base(this, 'constructor');
   game.core.helper.mixin(this, 'shape', 'listenable');
+  this.resize_();
   this.registerListener(
       game.core.Window.RESIZE_LISTENER_EVENT_NAME, this.resize_.bind(this));
-  window.addEventListener('resize',
+  window.addEventListener(
+      game.core.Window.RESIZE_LISTENER_EVENT_NAME,
       this.callListeners.bind(
           this, game.core.Window.RESIZE_LISTENER_EVENT_NAME));
-  this.resize_();
 };
+game.core.helper.inherit(game.core.Window, game.core.Entity);
 
 
 /**

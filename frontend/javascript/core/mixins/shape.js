@@ -121,7 +121,7 @@ game.mixins.Shape.prototype.setRectangle = function(position, width, height) {
   this.angle_ = 0;
   this.offset_ = new game.core.math.Vector();
   this.setSize(width, height);
-  this.setPosition();
+  this.setPosition(position);
 
   this.recalc();
   return this;
@@ -270,7 +270,7 @@ game.mixins.Shape.prototype.recalc = function() {
     normals.push(n);
   }
 
-  this.isDirty = true;
+  this.setDirty(true);
 
   return this;
 };

@@ -1,6 +1,7 @@
 goog.provide('game.core.Main');
 
 goog.require('game.core.Entity');
+goog.require('game.core.Window');
 
 
 
@@ -8,13 +9,18 @@ goog.require('game.core.Entity');
  * The main entry point into the application, extend this and get going.
  *
  * @constructor
+ * @param {Element=|HTMLBodyElement=|game.core.Entity=} opt_rootLocation
  */
-game.core.Main = function() {
+game.core.Main = function(opt_rootLocation) {
   // Ensure we don't have more than one {@code game.core.Main} floating around.
   if (game.core.Camera.prototype._initialized) {
     throw new Error('Main has already been initialized.');
   }
   game.core.Camera.prototype._initialized = true;
+  /** @private {!game.core.Window} */
+  this.window_ = new game.core.Window();
+  /** @private {Element|HTMLBodyElement|game.core.Entity} */
+  this.rootLocation_ = opt_rootLocation || document.body;
   /**
    * In the physics loop this is the last time the loop ran in seconds.
    * @private {number}
@@ -31,12 +37,11 @@ game.core.Main = function() {
    * @private {number}
    */
   this.globalTick_ = 0;
+  /** @type {!game.core.Entity} */
+  this.root = game.core.Main.Root = new game.core.Entity().addClass('root');
 
   // Initialize.
   this.init();
-  // Kick things off.
-  this.physicsLoop();
-  this.renderLoop();
 };
 
 
@@ -55,6 +60,10 @@ game.core.Main.prototype.init = function() {
   game.core.Entity.forEach(function(entity) {
     entity.init();
   });
+  this.root.attach(this.rootLocation_);
+  // Kick things off.
+  this.physicsLoop();
+  this.renderLoop();
 };
 
 
@@ -78,7 +87,7 @@ game.core.Main.prototype.physicsLoop = function() {
   if (!this.physicsRemainderTime_) this.physicsRemainderTime_ = 0;
 
   var dt = (currTime - this.lastTimeRan_) + this.physicsRemainderTime_;
-  var dtstep = 1 / game.Main.FPS;
+  var dtstep = 1 / game.core.Main.FPS;
   var steps = Math.floor(dt / dtstep);
 
   this.physicsRemainderTime_ = dt - dtstep * steps;
@@ -87,7 +96,6 @@ game.core.Main.prototype.physicsLoop = function() {
   for (var step = 0; step < steps; step++) {
     game.core.Entity.forEach(function(entity) {
       entity.update(dtstep, this.globalTick_);
-      entity.resolveCollisions(dtstep);
     }.bind(this));
     this.tick(this.globalTick_++);
   }

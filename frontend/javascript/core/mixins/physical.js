@@ -66,9 +66,11 @@ game.mixins.Physical.prototype.getAcceleration = function() {
  * Sets acceleration.
  *
  * @param {!game.core.math.Vector} vector
+ * @return {!game.mixins.Physical}
  */
 game.mixins.Physical.prototype.setAcceleration = function(vector) {
   this.acceleration_ = vector;
+  return this;
 };
 
 
@@ -86,9 +88,11 @@ game.mixins.Physical.prototype.getVelocity = function() {
  * Sets velocity.
  *
  * @param {!game.core.math.Vector} vector
+ * @return {!game.mixins.Physical}
  */
 game.mixins.Physical.prototype.setVelocity = function(vector) {
   this.velocity_ = vector;
+  return this;
 };
 
 
@@ -105,9 +109,11 @@ game.mixins.Physical.prototype.getMass = function() {
 /**
  * Registers the mass of the object.
  * @param {number} mass
+ * @return {!game.mixins.Physical}
  */
 game.mixins.Physical.prototype.setMass = function(mass) {
   this.mass_ = mass;
+  return this;
 };
 
 
@@ -125,6 +131,7 @@ game.mixins.Physical.prototype.isMovable = function() {
  * Adds a force along the x-axis to the object.
  *
  * @param {number} force
+ * @return {!game.mixins.Physical}
  */
 game.mixins.Physical.prototype.addXForce = function(force) {
   if (this.isMovable()) {
@@ -132,6 +139,7 @@ game.mixins.Physical.prototype.addXForce = function(force) {
     acc.x += force / this.getMass();
     this.setAcceleration(acc);
   }
+  return this;
 };
 
 
@@ -139,6 +147,7 @@ game.mixins.Physical.prototype.addXForce = function(force) {
  * Adds a force along the y-axis to the object.
  *
  * @param {number} force
+ * @return {!game.mixins.Physical}
  */
 game.mixins.Physical.prototype.addYForce = function(force) {
   if (this.isMovable()) {
@@ -146,18 +155,22 @@ game.mixins.Physical.prototype.addYForce = function(force) {
     acc.y += force / this.getMass();
     this.setAcceleration(acc);
   }
+  return this;
 };
 
 
 /**
  * Adds gravity to the object.
+ *
+ * @return {!game.mixins.Physical}
  */
 game.mixins.Physical.prototype.addGravity = function() {
   if (this.isMovable()) {
     var acc = this.getAcceleration();
-    acc.y += game.constants.Physics.GRAVITY;
+    acc.y += game.core.constants.GRAVITY;
     this.setAcceleration(acc);
   }
+  return this;
 };
 
 
@@ -165,6 +178,7 @@ game.mixins.Physical.prototype.addGravity = function() {
  * Update velocity.
  *
  * @param {number} delta
+ * @return {!game.mixins.Physical}
  */
 game.mixins.Physical.prototype.updateVelocity = function(delta) {
   var accel = this.getAcceleration();
@@ -172,6 +186,7 @@ game.mixins.Physical.prototype.updateVelocity = function(delta) {
   velocity.x += accel.x * delta;
   velocity.y += accel.y * delta;
   this.setVelocity(velocity);
+  return this;
 };
 
 
@@ -179,6 +194,7 @@ game.mixins.Physical.prototype.updateVelocity = function(delta) {
  * Update position.
  *
  * @param {number} delta
+ * @return {!game.mixins.Physical}
  */
 game.mixins.Physical.prototype.updatePosition = function(delta) {
   var acceleration = this.getAcceleration();
@@ -187,6 +203,7 @@ game.mixins.Physical.prototype.updatePosition = function(delta) {
   position.x += (velocity.x * delta) + (0.5 * acceleration.x * delta * delta);
   position.y += (velocity.y * delta) + (0.5 * acceleration.y * delta * delta);
   this.setPosition(position);
+  return this;
 };
 
 
@@ -229,7 +246,7 @@ game.mixins.Physical.prototype.update = function(delta) {
         }
 
         if (didCollide) {
-          this.resolveCollisions(response, delta);
+          this.resolveCollisions_(response, delta);
           callback(entity);
         }
       }
@@ -243,8 +260,9 @@ game.mixins.Physical.prototype.update = function(delta) {
  *
  * @param {game.core.collision.Response} response
  * @param {number} delta
+ * @private
  */
-game.mixins.Physical.prototype.resolveCollisions = function(response, delta) {
+game.mixins.Physical.prototype.resolveCollisions_ = function(response, delta) {
   var correction =
       response.overlapV.clone().scale(game.Player.COLLISION_SMUDGE);
   var position = this.getPosition().sub(correction);
@@ -254,10 +272,10 @@ game.mixins.Physical.prototype.resolveCollisions = function(response, delta) {
   velocity.scale(this.bouncyness);
 
   if (velocity.x > game.core.constants.EPSILON) {
-    velocity.x -= game.constants.Physics.GRAVITY * this.friction * delta;
+    velocity.x -= game.core.constants.GRAVITY * this.friction * delta;
     if (velocity.x < 0) velocity.x = 0;
   } else if (velocity.x < game.core.constants.EPSILON) {
-    velocity.x += game.constants.Physics.GRAVITY * this.friction * delta;
+    velocity.x += game.core.constants.GRAVITY * this.friction * delta;
     if (velocity.x > 0) velocity.x = 0;
   } else {
     velocity.x = 0;
@@ -271,10 +289,12 @@ game.mixins.Physical.prototype.resolveCollisions = function(response, delta) {
 /**
  * Registeres objects that can be collided with.
  * @param {string} name
- * @param {!game.core.Entity} type [description]
+ * @param {!game.core.Entity} type
+ * @return {!game.mixins.Physical}
  */
 game.mixins.Physical.prototype.registerCollider = function(name, type) {
   game.mixins.Physical.Colliders[name] = type;
+  return this;
 };
 
 
@@ -282,6 +302,7 @@ game.mixins.Physical.prototype.registerCollider = function(name, type) {
  * Registers names of objects that this instance can colide with.
  * @param {string} name
  * @param {Function} callback
+ * @return {!game.mixins.Physical}
  */
 game.mixins.Physical.prototype.registerCollidesWith = function(name, callback) {
   if (!_.isObject(this.colliders)) this.colliders = {};
@@ -290,4 +311,5 @@ game.mixins.Physical.prototype.registerCollidesWith = function(name, callback) {
     return;
   }
   this.colliders[name] = callback;
+  return this;
 };

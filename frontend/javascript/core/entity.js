@@ -39,7 +39,9 @@ game.core.Entity = function(opt_position, opt_w, opt_h) {
   /** @type {!Element} */
   this.el = document.createElement('span');
   this.el.id = this.id_;
-  this.el.classList.add(game.core.Entity.CLASS_NAME);
+  this.addClass(game.core.Entity.CLASS_NAME);
+
+  game.core.Entity.All.push(this);
 };
 
 
@@ -69,18 +71,45 @@ game.core.Entity.ID_COUNT = 0;
 
 
 /**
+ * Iterates through all the active entities.
+ *
+ * @param {function()} callback
+ */
+game.core.Entity.forEach = function(callback) {
+  _.each(
+      _.filter(game.core.Entity.All, function(entity) {
+        return entity.isActive();
+      }), callback);
+};
+
+
+/**
  * Initialized the entity.
  */
 game.core.Entity.prototype.init = function() {};
 
 
 /**
+ * Adds a class to the element.
+ *
+ * @param {string} className
+ * @return {!game.core.Entity}
+ */
+game.core.Entity.prototype.addClass = function(className) {
+  this.el.classList.add(className);
+  return this;
+};
+
+
+/**
  * Adds mixins to this entity.
  *
  * @param {...string} var_args Variable number of mixin names.
+ * @return {!game.core.Entity}
  */
 game.core.Entity.prototype.mixin = function(var_args) {
   game.core.helper.mixin(this, arguments);
+  return this;
 };
 
 
@@ -89,9 +118,11 @@ game.core.Entity.prototype.mixin = function(var_args) {
  *
  * @param {boolean} bool True will force the entity to be re-drawn on
  *     {@code #update}.
+ * @return {!game.core.Entity}
  */
 game.core.Entity.prototype.setDirty = function(bool) {
   this.dirty_ = bool;
+  return this;
 };
 
 
@@ -137,9 +168,11 @@ game.core.Entity.prototype.setPosition = function(position) {
  * Gets the scale of the entity.
  *
  * @param {game.core.math.Vector} scale
+ * @return {!game.core.Entity}
  */
 game.core.Entity.prototype.setScale = function(scale) {
   this.scale_ = scale;
+  return this;
 };
 
 
@@ -158,6 +191,7 @@ game.core.Entity.prototype.getScale = function() {
  *
  * @param {number} width
  * @param {number} height
+ * @return {!game.core.Entity}
  */
 game.core.Entity.prototype.setSize = function(width, height) {
   this.width = width;
@@ -168,6 +202,7 @@ game.core.Entity.prototype.setSize = function(width, height) {
   this.el.style.width = this.width + 'px';
   this.el.style.height = this.height + 'px';
   this.setDirty(true);
+  return this;
 };
 
 
@@ -192,19 +227,6 @@ game.core.Entity.prototype.getHeight = function() {
 
 
 /**
- * Iterates through all the active entities.
- *
- * @param {function()} callback
- */
-game.core.Entity.forEach = function(callback) {
-  _.each(
-      _.filter(game.core.Entity.All, function(entity) {
-        return entity.isActive();
-      }), callback);
-};
-
-
-/**
  * Whether the entity is active.
  *
  * @return {boolean}
@@ -225,21 +247,9 @@ game.core.Entity.prototype.inDom = function() {
 
 
 /**
- * Initializes the entity.
- */
-game.core.Entity.prototype.init = function() {};
-
-
-/**
  * Updates the entity information.
  */
 game.core.Entity.prototype.update = function() {};
-
-
-/**
- * Resolves any collisions if they exist.
- */
-game.core.Entity.prototype.resolveCollisions = function() {};
 
 
 /**
@@ -247,6 +257,7 @@ game.core.Entity.prototype.resolveCollisions = function() {};
  *
  * @param {Element|HTMLBodyElement|game.core.Entity} parent The parent to attach
  *     this entity to.
+ * @return {!game.core.Entity}
  */
 game.core.Entity.prototype.attach = function(parent) {
   if (parent instanceof game.core.Entity) {
@@ -260,11 +271,13 @@ game.core.Entity.prototype.attach = function(parent) {
     console.warn('Attempted to attach dom element multiple times:', this.el);
   }
   this.setupEventListeners();
+  return this;
 };
 
 
 /**
  * Detach element from dom.
+ * @return {!game.core.Entity}
  */
 game.core.Entity.prototype.detach = function() {
   if (this.el.parentNode) {
@@ -275,6 +288,7 @@ game.core.Entity.prototype.detach = function() {
         'Attempted to remove dom element when it has no parent', this.el);
   }
   this.destroyEventListeners();
+  return this;
 };
 
 
@@ -293,6 +307,7 @@ game.core.Entity.prototype.destroyEventListeners = function() {};
 /**
  * This is being called from game.mixins.Rectangle, if there is a rect to
  * update it will.
+ * @return {!game.core.Entity}
  */
 game.core.Entity.prototype.draw = function() {
   if (!this.isDirty()) return;
@@ -300,4 +315,5 @@ game.core.Entity.prototype.draw = function() {
   var position = this.getPosition();
   var scale = this.getScale();
   game.core.helper.updateTranslate(this.el, position, scale);
+  return this;
 };
