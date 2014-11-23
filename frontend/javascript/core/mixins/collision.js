@@ -1,4 +1,3 @@
-goog.provide('game.core.math.Response');
 goog.provide('game.core.math.collision');
 goog.provide('game.core.math.collision.helper');
 
@@ -7,43 +6,44 @@ goog.require('game.core.math.Vector');
 goog.require('game.mixins.Shape');
 
 
-
-/**
- * An object representing the result of an intersection. Contains:
- *  - The two objects participating in the intersection
- *  - The vector representing the minimum change necessary to extract the first
- *    object from the second one (as well as a unit vector in that direction and
- *    the magnitude of the overlap)
- *  - Whether the first object is entirely inside the second, and vice versa.
- *
- * @constructor
- */
-game.core.math.Response = function() {
-  this.a = null;
-  this.b = null;
-  this.overlapN = new game.core.math.Vector();
-  this.overlapV = new game.core.math.Vector();
-  this.clear();
-};
-
-
-/**
- * Set some values of the response back to their defaults. Call this between
- * tests if you are going to reuse a single Response object for multiple
- * intersection tests (recommented as it will avoid allcating extra memory)
- *
- * @return {game.core.math.Response} This for chaining
- */
-game.core.math.Response.prototype.clear = function() {
-  this.aInB = true;
-  this.bInA = true;
-  this.overlap = Number.MAX_VALUE;
-  return this;
-};
-
-
-// This was stolen and modified from SAT.js: https://github.com/jriecken/sat-js
 game.core.helper.scope(function() {
+  /**
+   * An object representing the result of an intersection. Contains:
+   *  - The two objects participating in the intersection
+   *  - The vector representing the minimum change necessary to extract the
+   *    first object from the second one (as well as a unit vector in that
+   *    direction and the magnitude of the overlap)
+   *  - Whether the first object is entirely inside the second, and vice versa.
+   *
+   * Stolen and modified from SAT.js: https://github.com/jriecken/sat-js
+   *
+   * @constructor
+   */
+  game.core.math.collision.Response = function() {
+    this.a = null;
+    this.b = null;
+    this.overlapN = new game.core.math.Vector();
+    this.overlapV = new game.core.math.Vector();
+    this.clear();
+  };
+
+
+  /**
+   * Set some values of the response back to their defaults. Call this between
+   * tests if you are going to reuse a single Response object for multiple
+   * intersection tests (recommented as it will avoid allcating extra memory)
+   *
+   * @return {game.core.math.collision.Response} This for chaining
+   */
+  game.core.math.collision.Response.prototype.clear = function() {
+    this.aInB = true;
+    this.bInA = true;
+    this.overlap = Number.MAX_VALUE;
+    return this;
+  };
+
+
+
   // Alias to help life be easy!
   var helper = game.core.math.collision.helper;
   /**
@@ -69,9 +69,9 @@ game.core.helper.scope(function() {
   /**
    * Temporary response used for polygon hit detection.
    *
-   * @type {!game.core.math.Response}
+   * @type {!game.core.math.collision.Response}
    */
-  var T_RESPONSE = new game.core.math.Response();
+  var T_RESPONSE = new game.core.math.collision.Response();
 
 
   /**
@@ -119,7 +119,7 @@ game.core.helper.scope(function() {
    *     polygon.
    * @param {game.core.math.Vector} axis The axis (unit sized) to test against.
    *     The points of both polygons will be projected onto this axis.
-   * @param {game.core.math.Response=} opt_response A game.core.math.Response
+   * @param {game.core.math.collision.Response=} opt_response A response
    *     object (optional) which will be populated if the axis is not a
    *     separating axis.
    * @return {boolean} true if it is a separating axis, false otherwise.
@@ -254,8 +254,8 @@ game.core.helper.scope(function() {
    *     not.
    */
   game.core.math.collision.pointInCircle = function(p, c) {
-    var differenceV = T_VECTORS.pop().copy(p).sub(c.pos);
-    var radiusSq = c.r * c.r;
+    var differenceV = T_VECTORS.pop().copy(p).sub(c.position_);
+    var radiusSq = c.radius_ * c.radius_;
     var distanceSq = differenceV.len2();
     T_VECTORS.push(differenceV);
     // If the distance between is smaller than the radius then the point is
@@ -273,7 +273,7 @@ game.core.helper.scope(function() {
    *     not.
    */
   game.core.math.collision.pointInPolygon = function(p, poly) {
-    UNIT_SQUARE.pos.copy(p);
+    UNIT_SQUARE.position_.copy(p);
     T_RESPONSE.clear();
     var result = game.core.math.collision.testPolygonPolygon(
         UNIT_SQUARE, poly, T_RESPONSE);
@@ -289,15 +289,15 @@ game.core.helper.scope(function() {
    *
    * @param {Circle} a The first circle.
    * @param {Circle} b The second circle.
-   * @param {game.core.math.Response=} opt_response game.core.math.Response
+   * @param {game.core.math.collision.Response=} opt_response Response
    *     object (optional) that will be populated if the circles intersect.
    * @return {boolean} true if the circles intersect, false if they don't.
    */
   game.core.math.collision.testCircleCircle = function(a, b, opt_response) {
     // Check if the distance between the centers of the two
     // circles is greater than their combined radius.
-    var differenceV = T_VECTORS.pop().copy(b.pos).sub(a.pos);
-    var totalRadius = a.r + b.r;
+    var differenceV = T_VECTORS.pop().copy(b.position_).sub(a.position_);
+    var totalRadius = a.radius_ + b.radius_;
     var totalRadiusSq = totalRadius * totalRadius;
     var distanceSq = differenceV.len2();
     // If the distance is bigger than the combined radius, they don't intersect.
@@ -314,8 +314,8 @@ game.core.helper.scope(function() {
       response.overlap = totalRadius - dist;
       response.overlapN.copy(differenceV.normalize());
       response.overlapV.copy(differenceV).scale(response.overlap);
-      response.aInB = a.r <= b.r && dist <= b.r - a.r;
-      response.bInA = b.r <= a.r && dist <= a.r - b.r;
+      response.aInB = a.radius_ <= b.radius_ && dist <= b.radius_ - a.radius_;
+      response.bInA = b.radius_ <= a.radius_ && dist <= a.radius_ - b.radius_;
     }
     T_VECTORS.push(differenceV);
     return true;
@@ -327,7 +327,7 @@ game.core.helper.scope(function() {
    *
    * @param {Polygon} polygon The polygon.
    * @param {Circle} circle The circle.
-   * @param {game.core.math.Response=} opt_response game.core.math.Response
+   * @param {game.core.math.collision.Response=} opt_response A Response
    *     object (optional) that will be populated if they interset.
    * @return {boolean} true if they intersect, false if they don't.
    */
@@ -335,10 +335,13 @@ game.core.helper.scope(function() {
       function(polygon, circle, opt_response) {
     var response = opt_response;
     // Get the position of the circle relative to the polygon.
-    var circlePos = T_VECTORS.pop().copy(circle.pos).sub(polygon.pos);
-    var radius = circle.r;
+    var circlePos = T_VECTORS.
+        pop().
+        copy(circle.position_).
+        sub(polygon.position_);
+    var radius = circle.radius_;
     var radius2 = radius * radius;
-    var points = polygon.calcPoints;
+    var points = polygon.calcPoints_;
     var len = points.length;
     var edge = T_VECTORS.pop();
     var point = T_VECTORS.pop();
@@ -351,7 +354,7 @@ game.core.helper.scope(function() {
       var overlapN = null;
 
       // Get the edge.
-      edge.copy(polygon.edges[i]);
+      edge.copy(polygon.edges_[i]);
       // Calculate the center of the circle relative to the starting point of
       // the edge.
       point.copy(circlePos).sub(points[i]);
@@ -359,8 +362,8 @@ game.core.helper.scope(function() {
       // If the distance between the center of the circle and the point
       // is bigger than the radius, the polygon is definitely not fully in
       // the circle.
-      if (opt_response && point.len2() > radius2) {
-        opt_response.aInB = false;
+      if (response && point.len2() > radius2) {
+        response.aInB = false;
       }
 
       // Calculate which Vornoi region the center of the circle is in.
@@ -369,7 +372,7 @@ game.core.helper.scope(function() {
       if (region === LEFT_VORNOI_REGION) {
         // We need to make sure we're in the RIGHT_VORNOI_REGION of the previous
         // edge.
-        edge.copy(polygon.edges[prev]);
+        edge.copy(polygon.edges_[prev]);
         // Calculate the center of the circle relative the starting point of the
         // previous edge
         var point2 = T_VECTORS.pop().copy(circlePos).sub(points[prev]);
@@ -396,7 +399,7 @@ game.core.helper.scope(function() {
       // If it's the right region:
       } else if (region === RIGHT_VORNOI_REGION) {
         // We need to make sure we're in the left region on the next edge
-        edge.copy(polygon.edges[next]);
+        edge.copy(polygon.edges_[next]);
         // Calculate the center of the circle relative to the starting point of
         // the next edge.
         point.copy(circlePos).sub(points[next]);
@@ -480,15 +483,15 @@ game.core.helper.scope(function() {
    *
    * @param {Circle} circle The circle.
    * @param {Polygon} polygon The polygon.
-   * @param {game.core.math.Response=} opt_response game.core.math.Response
+   * @param {game.core.math.collision.Response=} opt_response A.Response
    *     object (optional) that will be populated if they interset.
    * @return {boolean} true if they intersect, false if they don't.
    */
   game.core.math.collision.testCirclePolygon =
       function(circle, polygon, opt_response) {
     // Test the polygon against the circle.
-    var result =
-        game.core.math.collision.testPolygonCircle(polygon, circle, response);
+    var result = game.core.math.collision.testPolygonCircle(
+        polygon, circle, opt_response);
     if (result && opt_response) {
       var response = opt_response;
       // Swap A and B in the response.
@@ -510,27 +513,37 @@ game.core.helper.scope(function() {
    *
    * @param {Polygon} a The first polygon.
    * @param {Polygon} b The second polygon.
-   * @param {game.core.math.Response=} opt_response
-   *     game.core.math.Response object (optional) that will be populated if
-   *     they interset.
+   * @param {game.core.math.collision.Response=} opt_response
+   *     game.core.math.collision.Response object (optional) that will be
+   *     populated if they interset.
    * @return {boolean} true if they intersect, false if they don't.
    */
   game.core.math.collision.testPolygonPolygon = function(a, b, opt_response) {
-    var aPoints = a.calcPoints;
+    var aPoints = a.calcPoints_;
     var aLen = aPoints.length;
-    var bPoints = b.calcPoints;
+    var bPoints = b.calcPoints_;
     var bLen = bPoints.length;
     // If any of the edge normals of A is a separating axis, no intersection.
     for (var i = 0; i < aLen; i++) {
       if (helper.isSeparatingAxis(
-          a.pos, b.pos, aPoints, bPoints, a.normals[i], opt_response)) {
+          a.position_,
+          b.position_,
+          aPoints,
+          bPoints,
+          a.normals_[i],
+          opt_response)) {
         return false;
       }
     }
     // If any of the edge normals of B is a separating axis, no intersection.
     for (var i = 0; i < bLen; i++) {
       if (helper.isSeparatingAxis(
-          a.pos, b.pos, aPoints, bPoints, b.normals[i], opt_response)) {
+          a.position_,
+          b.position_,
+          aPoints,
+          bPoints,
+          b.normals_[i],
+          opt_response)) {
         return false;
       }
     }

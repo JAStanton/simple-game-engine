@@ -13,7 +13,6 @@ game.core.Main = function() {
   // Ensure we don't have more than one {@code game.core.Main} floating around.
   if (game.core.Camera.prototype._initialized) {
     throw new Error('Main has already been initialized.');
-    return;
   }
   game.core.Camera.prototype._initialized = true;
   /**
@@ -90,7 +89,7 @@ game.core.Main.prototype.physicsLoop = function() {
       entity.update(dtstep, this.globalTick_);
       entity.resolveCollisions(dtstep);
     }.bind(this));
-    this.tick(this.this.globalTick_++);
+    this.tick(this.globalTick_++);
   }
   this.lastTimeRan_ = currTime;
   setTimeout(this.physicsLoop.bind(this), 0);

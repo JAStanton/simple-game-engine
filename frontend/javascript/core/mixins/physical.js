@@ -2,7 +2,6 @@ goog.provide('game.mixins.Physical');
 
 goog.require('game.core.constants');
 goog.require('game.core.helper');
-goog.require('game.core.math.Response');
 goog.require('game.core.math.Vector');
 goog.require('game.core.math.collision');
 goog.require('game.mixins.Shape.Type');
@@ -225,11 +224,13 @@ game.mixins.Physical.prototype.step = function(delta) {
 game.mixins.Physical.prototype.update = function(delta) {
   this.step(delta);
   if (!_.isObject(this.colliders)) this.colliders = {};
-  var collision = false;
-  _.each(game.core.Entity.All, function(entity) {
+
+  game.core.Entity.forEach(function(entity) {
+    // TODO(jstanton): Combine with non-instance collisions i.e.: game.Player
+    // collides with game.Wall.
     _.each(this.colliders, function(callback, name) {
       if (entity instanceof game.mixins.Physical.Colliders[name]) {
-        var response = new game.core.math.Response();
+        var response = new game.core.math.collision.Response();
         var collision = game.core.math.collision;
         var ShapeType = game.mixins.Shape.Type;
         var didCollide = false;

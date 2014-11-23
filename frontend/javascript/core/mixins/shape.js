@@ -42,6 +42,12 @@ game.mixins.Shape.prototype.init = function() {
   this.type_;
   /** @private {Array.<!game.core.math.Vector>} */
   this.points_;
+  /** @private {Array.<!game.core.math.Vector>} */
+  this.calcPoints_;
+  /** @private {Array.<!game.core.math.Vector>} */
+  this.edges_;
+  /** @private {Array.<!game.core.math.Vector>} */
+  this.normals_;
   /** @private {number} */
   this.angle_ = 0;
   /** @private {game.core.math.Vector} */
@@ -58,7 +64,7 @@ game.mixins.Shape.prototype.init = function() {
  *
  * @param {game.core.math.Vector=} opt_pos A vector representing the origin of
  *     the polygon. (all other points are relative to this one)
- * @param {Array.<game.core.math.Vector>=|number=} opt_points An array of
+ * @param {Array.<game.core.math.Vector>|number=} opt_points An array of
  *     vectors representing the points in the polygon, in counter-clockwise
  *     order.
  * @return {!game.mixins.Shape} This for chaining.
@@ -226,16 +232,16 @@ game.mixins.Shape.prototype.recalc = function() {
   var i;
   // Calculated points - this is what is used for underlying collisions and
   // takes into account the angle/offset set on the polygon.
-  var calcPoints = this.calcPoints = [];
+  var calcPoints = this.calcPoints_ = [];
   // The edges here are the direction of the `n`th edge of the polygon, relative
   // to the `n`th point. If you want to draw a given edge from the edge value,
   // you must first translate to the position of the starting point.
-  var edges = this.edges = [];
+  var edges = this.edges_ = [];
   // The normals here are the direction of the normal for the `n`th edge of the
   // polygon, relative to the position of the `n`th point. If you want to draw
   // an edge normal, you must first translate to the position of the starting
   // point.
-  var normals = this.normals = [];
+  var normals = this.normals_ = [];
   // Copy the original points array and apply the offset/angle
   var points = this.points_ || [];
   var offset = this.offset_ || 0;
