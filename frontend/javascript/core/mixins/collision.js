@@ -294,6 +294,7 @@ game.core.helper.scope(function() {
    * @return {boolean} true if the circles intersect, false if they don't.
    */
   game.core.math.collision.testCircleCircle = function(a, b, opt_response) {
+    var response = opt_response;
     // Check if the distance between the centers of the two
     // circles is greater than their combined radius.
     var differenceV = T_VECTORS.pop().copy(b.position_).sub(a.position_);
@@ -306,8 +307,7 @@ game.core.helper.scope(function() {
       return false;
     }
     // They intersect.  If we're calculating a response, calculate the overlap.
-    if (opt_response) {
-      var response = opt_response;
+    if (response) {
       var dist = Math.sqrt(distanceSq);
       response.a = a;
       response.b = b;
@@ -489,11 +489,11 @@ game.core.helper.scope(function() {
    */
   game.core.math.collision.testCirclePolygon =
       function(circle, polygon, opt_response) {
+    var response = opt_response;
     // Test the polygon against the circle.
-    var result = game.core.math.collision.testPolygonCircle(
-        polygon, circle, opt_response);
-    if (result && opt_response) {
-      var response = opt_response;
+    var result =
+        game.core.math.collision.testPolygonCircle(polygon, circle, response);
+    if (result && response) {
       // Swap A and B in the response.
       var a = response.a;
       var aInB = response.aInB;
@@ -519,6 +519,7 @@ game.core.helper.scope(function() {
    * @return {boolean} true if they intersect, false if they don't.
    */
   game.core.math.collision.testPolygonPolygon = function(a, b, opt_response) {
+    var response = opt_response;
     var aPoints = a.calcPoints_;
     var aLen = aPoints.length;
     var bPoints = b.calcPoints_;
@@ -531,7 +532,7 @@ game.core.helper.scope(function() {
           aPoints,
           bPoints,
           a.normals_[i],
-          opt_response)) {
+          response)) {
         return false;
       }
     }
@@ -543,20 +544,20 @@ game.core.helper.scope(function() {
           aPoints,
           bPoints,
           b.normals_[i],
-          opt_response)) {
+          response)) {
         return false;
       }
     }
     // Since none of the edge normals of A or B are a separating axis, there is
     // an intersection and we've already calculated the smallest overlap (in
     // isSeparatingAxis).  Calculate the final overlap vector.
-    if (opt_response) {
-      var response = opt_response;
-      opt_response.a = a;
-      opt_response.b = b;
-      opt_response.overlapV.
-          copy(opt_response.overlapN).
-          scale(opt_response.overlap);
+    if (response) {
+      var response = response;
+      response.a = a;
+      response.b = b;
+      response.overlapV.
+          copy(response.overlapN).
+          scale(response.overlap);
     }
     return true;
   };
