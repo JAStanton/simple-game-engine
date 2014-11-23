@@ -34,6 +34,9 @@ game.mixins.Physical.Colliders = {};
  * Initialized the values.
  */
 game.mixins.Physical.prototype.init = function() {
+  if (!this.colliders) {
+    this.colliders = {};
+  }
   if (!this.position_) {
     this.position_ = new game.core.math.Vector();
   }
@@ -50,12 +53,12 @@ game.mixins.Physical.prototype.init = function() {
 
 
 /**
- * Returns a reference to the acceleration of the entity.
+ * Returns a clone of the acceleration of the entity.
  *
  * @return {!game.core.math.Vector}
  */
 game.mixins.Physical.prototype.getAcceleration = function() {
-  return this.acceleration_;
+  return this.acceleration_.clone();
 };
 
 
@@ -63,20 +66,19 @@ game.mixins.Physical.prototype.getAcceleration = function() {
  * Sets acceleration.
  *
  * @param {!game.core.math.Vector} vector
- * @return {!game.core.math.Vector}
  */
 game.mixins.Physical.prototype.setAcceleration = function(vector) {
-  return this.acceleration_ = vector;
+  this.acceleration_ = vector;
 };
 
 
 /**
- * Returns a reference to the velocity of the entity.
+ * Returns a clone of the velocity of the entity.
  *
  * @return {!game.core.math.Vector}
  */
 game.mixins.Physical.prototype.getVelocity = function() {
-  return this.velocity_;
+  return this.velocity_.clone();
 };
 
 
@@ -84,17 +86,16 @@ game.mixins.Physical.prototype.getVelocity = function() {
  * Sets velocity.
  *
  * @param {!game.core.math.Vector} vector
- * @return {!game.core.math.Vector}
  */
 game.mixins.Physical.prototype.setVelocity = function(vector) {
-  return this.velocity_ = vector;
+  this.velocity_ = vector;
 };
 
 
 /**
  * Returns a reference to the mass of the entity.
  *
- * @return {!number}
+ * @return {number}
  */
 game.mixins.Physical.prototype.getMass = function() {
   return this.mass_;
@@ -102,13 +103,11 @@ game.mixins.Physical.prototype.getMass = function() {
 
 
 /**
- * Sets mass.
- *
+ * Registers the mass of the object.
  * @param {number} mass
- * @return {!number}
  */
 game.mixins.Physical.prototype.setMass = function(mass) {
-  return this.mass_ = mass;
+  this.mass_ = mass;
 };
 
 
@@ -123,38 +122,15 @@ game.mixins.Physical.prototype.isMovable = function() {
 
 
 /**
- * Adds gravity to the object.
- */
-game.mixins.Physical.prototype.addGravity = function() {
-  if (this.isMovable()) {
-    var acc = this.getAcceleration();
-    acc.y += game.core.constants.GRAVITY;
-  }
-};
-
-
-/**
- * Adds a force to the object.
- *
- * @param {!game.core.math.Vector} force
- */
-game.mixins.Physical.prototype.addForce = function(force) {
-  if (this.isMovable()) {
-    var acc = this.getAcceleration();
-    acc += force / this.getMass();
-  }
-};
-
-
-/**
  * Adds a force along the x-axis to the object.
  *
- * @param {!number} force
+ * @param {number} force
  */
 game.mixins.Physical.prototype.addXForce = function(force) {
   if (this.isMovable()) {
     var acc = this.getAcceleration();
     acc.x += force / this.getMass();
+    this.setAcceleration(acc);
   }
 };
 
@@ -162,12 +138,25 @@ game.mixins.Physical.prototype.addXForce = function(force) {
 /**
  * Adds a force along the y-axis to the object.
  *
- * @param {!number} force
+ * @param {number} force
  */
 game.mixins.Physical.prototype.addYForce = function(force) {
   if (this.isMovable()) {
     var acc = this.getAcceleration();
     acc.y += force / this.getMass();
+    this.setAcceleration(acc);
+  }
+};
+
+
+/**
+ * Adds gravity to the object.
+ */
+game.mixins.Physical.prototype.addGravity = function() {
+  if (this.isMovable()) {
+    var acc = this.getAcceleration();
+    acc.y += game.constants.Physics.GRAVITY;
+    this.setAcceleration(acc);
   }
 };
 
@@ -182,6 +171,7 @@ game.mixins.Physical.prototype.updateVelocity = function(delta) {
   var velocity = this.getVelocity();
   velocity.x += accel.x * delta;
   velocity.y += accel.y * delta;
+  this.setVelocity(velocity);
 };
 
 
@@ -191,28 +181,12 @@ game.mixins.Physical.prototype.updateVelocity = function(delta) {
  * @param {number} delta
  */
 game.mixins.Physical.prototype.updatePosition = function(delta) {
-  var accel = this.getAcceleration();
+  var acceleration = this.getAcceleration();
   var velocity = this.getVelocity();
-  var pos = this.getPosition();
-  pos.x += (velocity.x * delta) + (0.5 * accel.x * delta * delta);
-  pos.y += (velocity.y * delta) + (0.5 * accel.y * delta * delta);
-};
-
-
-/**
- * Steps the time forward.
- *
- * @param {number} delta
- */
-game.mixins.Physical.prototype.step = function(delta) {
-  if (this.isMovable()) {
-    this.addGravity();
-
-    // Update the position.
-    this.updatePosition(delta);
-    // Update new velocity.
-    this.updateVelocity(delta);
-  }
+  var position = this.getPosition();
+  position.x += (velocity.x * delta) + (0.5 * acceleration.x * delta * delta);
+  position.y += (velocity.y * delta) + (0.5 * acceleration.y * delta * delta);
+  this.setPosition(position);
 };
 
 
@@ -222,9 +196,13 @@ game.mixins.Physical.prototype.step = function(delta) {
  * @param {number} delta
  */
 game.mixins.Physical.prototype.update = function(delta) {
-  this.step(delta);
-  if (!_.isObject(this.colliders)) this.colliders = {};
+  if (this.isMovable()) {
+    this.addGravity(delta);
+    this.updateVelocity(delta);
+    this.updatePosition(delta);
+  }
 
+  // Detects Collision
   game.core.Entity.forEach(function(entity) {
     // TODO(jstanton): Combine with non-instance collisions i.e.: game.Player
     // collides with game.Wall.
@@ -251,7 +229,8 @@ game.mixins.Physical.prototype.update = function(delta) {
         }
 
         if (didCollide) {
-          callback(entity, response, delta);
+          this.resolveCollisions(response, delta);
+          callback(entity);
         }
       }
     }.bind(this));
@@ -262,17 +241,30 @@ game.mixins.Physical.prototype.update = function(delta) {
 /**
  * Checks for collisions and adjust accordingly.
  *
+ * @param {game.core.collision.Response} response
  * @param {number} delta
  */
-game.mixins.Physical.prototype.resolveCollisions = function(delta) {};
+game.mixins.Physical.prototype.resolveCollisions = function(response, delta) {
+  var correction =
+      response.overlapV.clone().scale(game.Player.COLLISION_SMUDGE);
+  var position = this.getPosition().sub(correction);
+  var velocity = this.getVelocity();
+  var normal = response.overlapN;
+  velocity.sub(normal.clone().scale(2 * normal.dot(velocity)));
+  velocity.scale(this.bouncyness);
 
+  if (velocity.x > game.core.constants.EPSILON) {
+    velocity.x -= game.constants.Physics.GRAVITY * this.friction * delta;
+    if (velocity.x < 0) velocity.x = 0;
+  } else if (velocity.x < game.core.constants.EPSILON) {
+    velocity.x += game.constants.Physics.GRAVITY * this.friction * delta;
+    if (velocity.x > 0) velocity.x = 0;
+  } else {
+    velocity.x = 0;
+  }
 
-/**
- * Registers the mass of the object.
- * @param {!number} mass
- */
-game.mixins.Physical.prototype.setMass = function(mass) {
-  this.mass_ = mass;
+  this.setVelocity(velocity);
+  this.setPosition(position);
 };
 
 

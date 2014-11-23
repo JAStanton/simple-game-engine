@@ -552,7 +552,6 @@ game.core.helper.scope(function() {
     // an intersection and we've already calculated the smallest overlap (in
     // isSeparatingAxis).  Calculate the final overlap vector.
     if (response) {
-      var response = response;
       response.a = a;
       response.b = b;
       response.overlapV.
