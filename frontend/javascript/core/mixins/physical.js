@@ -218,7 +218,6 @@ game.mixins.Physical.prototype.update = function(delta) {
     this.updateVelocity(delta);
     this.updatePosition(delta);
   }
-
   // Detects Collision
   game.core.Entity.forEach(function(entity) {
     // TODO(jstanton): Combine with non-instance collisions i.e.: game.Player
@@ -287,7 +286,8 @@ game.mixins.Physical.prototype.resolveCollisions_ = function(response, delta) {
 
 
 /**
- * Registeres objects that can be collided with.
+ * Registers objects that can be collided with.
+ *
  * @param {string} name
  * @param {!game.core.Entity} type
  * @return {!game.mixins.Physical}
@@ -299,16 +299,16 @@ game.mixins.Physical.prototype.registerCollider = function(name, type) {
 
 
 /**
- * Registers names of objects that this instance can colide with.
+ * Registers names of objects that this instance can collide with.
+ *
  * @param {string} name
  * @param {Function} callback
  * @return {!game.mixins.Physical}
  */
 game.mixins.Physical.prototype.registerCollidesWith = function(name, callback) {
-  if (!_.isObject(this.colliders)) this.colliders = {};
   if (_.isUndefined(game.mixins.Physical.Colliders[name])) {
-    console.warn('Warning:', name, 'Is not registered as a colideer');
-    return;
+    console.warn('Warning:', name, 'Is not registered as a collider');
+    return this;
   }
   this.colliders[name] = callback;
   return this;
