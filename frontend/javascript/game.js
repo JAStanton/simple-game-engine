@@ -39,11 +39,10 @@ game.Main = function() {
       attach(this.gameBoard_).
       setRectangle(new game.core.math.Vector(10, 10), 20, 20);
   this.player_.init();
-  this.player_.registerCollidesWith('wall-0').
-      registerCollidesWith('wall-1').
-      registerCollidesWith('wall-2').
-      registerCollidesWith('wall-3');
-
+  this.player_.registerCollidesWith(
+      'wall-0', 'wall-1', 'wall-2', 'wall-3', function() {
+        console.log("shit's going down");
+      });
 
   /** @private {!game.core.Entity} */
   this.camera_ = new game.core.Camera(this.gameBoard_).

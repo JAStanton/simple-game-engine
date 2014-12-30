@@ -301,15 +301,34 @@ game.mixins.Physical.prototype.registerCollider = function(name, type) {
 /**
  * Registers names of objects that this instance can collide with.
  *
- * @param {string} name
+ * @param {...string} var_args Multilple strings
  * @param {Function} callback
  * @return {!game.mixins.Physical}
  */
-game.mixins.Physical.prototype.registerCollidesWith = function(name, callback) {
-  if (_.isUndefined(game.mixins.Physical.Colliders[name])) {
-    console.warn('Warning:', name, 'Is not registered as a collider');
-    return this;
+game.mixins.Physical.prototype.registerCollidesWith =
+    function(var_args, callback) {
+  var names = [];
+  for (var i = 0; i < arguments.length; i++) {
+    var argument = arguments[i];
+    if (_.isString(argument)) {
+      names.push(argument);
+    } else if (_.isFunction(argument)) {
+      if (arguments.length - 1 == i) {
+        callback = argument;
+      } else {
+        console.error('Abort:', argument, 'Is not recognized collider name');
+        return;
+      }
+    }
   }
-  this.colliders[name] = callback;
+
+  _.each(names, function(name) {
+    if (_.isUndefined(game.mixins.Physical.Colliders[name])) {
+      console.warn('Warning:', name, 'Is not registered as a collider');
+      return this;
+    }
+
+    this.colliders[name] = callback;
+  }, this);
   return this;
 };
