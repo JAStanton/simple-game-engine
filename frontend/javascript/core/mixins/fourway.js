@@ -33,33 +33,25 @@ game.mixins.Fourway.prototype.init = function() {
 
 /** moveLeft */
 game.mixins.Fourway.prototype.moveLeft = function() {
-  var velocity = this.getVelocity();
-  velocity.x += -35;
-  this.setVelocity(velocity);
+  this.addXForce(-20);
 };
 
 
 /** moveRight */
 game.mixins.Fourway.prototype.moveRight = function() {
-  var velocity = this.getVelocity();
-  velocity.x += 35;
-  this.setVelocity(velocity);
+  this.addXForce(20);
 };
 
 
 /** moveUp */
 game.mixins.Fourway.prototype.moveUp = function() {
-  var velocity = this.getVelocity();
-  velocity.y += -40;
-  this.setVelocity(velocity);
+  this.addYForce(-20);
 };
 
 
 /** moveDown */
 game.mixins.Fourway.prototype.moveDown = function() {
-  var velocity = this.getVelocity();
-  velocity.y += 40;
-  this.setVelocity(velocity);
+  this.addYForce(20);
 };
 
 

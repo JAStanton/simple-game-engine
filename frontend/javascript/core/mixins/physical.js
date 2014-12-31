@@ -49,6 +49,33 @@ game.mixins.Physical.prototype.init = function() {
   if (!_.isNumber(this.mass_)) {
     this.mass_ = 0;
   }
+  if (!_.isNumber(this.friction_)) {
+    this.friction_ = 0.5;
+  }
+};
+
+
+/**
+ * Sets the bouncyness of the object.
+ *
+ * @param {number} bouncyness
+ * @return {!game.mixins.Physical}
+ */
+game.mixins.Physical.prototype.setBouncyness = function(bouncyness) {
+  this.bouncyness_ = bouncyness;
+  return this;
+};
+
+
+/**
+ * Sets the friction of the object.
+ *
+ * @param {number} friction
+ * @return {!game.mixins.Physical}
+ */
+game.mixins.Physical.prototype.setFriction = function(friction) {
+  this.friction_ = friction;
+  return this;
 };
 
 
@@ -214,10 +241,12 @@ game.mixins.Physical.prototype.updatePosition = function(delta) {
  */
 game.mixins.Physical.prototype.update = function(delta) {
   if (this.isMovable()) {
-    this.addGravity(delta);
+    // this.addGravity(delta);
     this.updateVelocity(delta);
     this.updatePosition(delta);
   }
+
+  console.log(this.getVelocity());
 
   // TODO filter colliders by what's nearby.
   _.each(this.colliders, function(callback, name) {
@@ -268,13 +297,16 @@ game.mixins.Physical.prototype.resolveCollisions_ = function(response, delta) {
   var velocity = this.getVelocity();
   var normal = response.overlapN;
   velocity.sub(normal.clone().scale(2 * normal.dot(velocity)));
-  velocity.scale(this.bouncyness);
+
+  if (this.bouncyness_) {
+    velocity.scale(this.bouncyness_);
+  }
 
   if (velocity.x > game.core.constants.EPSILON) {
-    velocity.x -= game.core.constants.GRAVITY * this.friction * delta;
+    velocity.x -= game.core.constants.GRAVITY * this.friction_ * delta;
     if (velocity.x < 0) velocity.x = 0;
   } else if (velocity.x < game.core.constants.EPSILON) {
-    velocity.x += game.core.constants.GRAVITY * this.friction * delta;
+    velocity.x += game.core.constants.GRAVITY * this.friction_ * delta;
     if (velocity.x > 0) velocity.x = 0;
   } else {
     velocity.x = 0;
@@ -314,7 +346,6 @@ game.mixins.Physical.prototype.registerCollidesWith =
       console.warn('Warning: Unkown entity by this name:', name);
       return this;
     }
-    console.log('added collider:', name);
     this.colliders[name] = callback;
   }, this);
   return this;

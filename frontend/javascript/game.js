@@ -36,12 +36,13 @@ game.Main = function() {
       addClass('player').
       mixin('fourway', 'shape', 'physical').
       setMass(1).
+      setBouncyness(0.4).
       attach(this.gameBoard_).
-      setRectangle(new game.core.math.Vector(10, 10), 20, 20);
+      setRectangle(new game.core.math.Vector(50, 50), 40, 40);
   this.player_.init();
   this.player_.registerCollidesWith(
       'wall-0', 'wall-1', 'wall-2', 'wall-3', function(entity) {
-        console.log("shit's going down", entity.name);
+        // console.log("shit's going down", entity.name);
       });
 
   /** @private {!game.core.Entity} */
