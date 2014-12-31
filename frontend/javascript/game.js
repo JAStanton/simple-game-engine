@@ -14,18 +14,18 @@ goog.require('game.core.helper');
 game.Main = function() {
   game.Main.base(this, 'constructor');
 
-  var width = 1024;
-  var height = 768;
+  var width = 1920;
+  var height = 802;
 
   /** @private {!game.Board} */
   this.gameboard_ = new game.core.Board().
       setRectangle(new game.core.math.Vector(), width, height).
       attach(game.core.Main.Root);
 
-  this.addPlatform('wall-0', 0, 0, width * 2, 5);
-  this.addPlatform('wall-1', 0, 0, 5, height * 2);
-  this.addPlatform('wall-2', height * 2 - 5, 0, width * 2, 5);
-  this.addPlatform('wall-3', 0, width * 2 - 5, 5, height * 2);
+  this.addPlatform('wall-0', 0, 0, width, 5);
+  this.addPlatform('wall-1', 0, 0, 5, height);
+  this.addPlatform('wall-2', height - 5, 0, width, 5);
+  this.addPlatform('wall-3', 0, width - 5, 5, height);
 
   /** @private {!game.core.Entity} */
   this.player_ = new game.core.Entity().
