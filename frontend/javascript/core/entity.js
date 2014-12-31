@@ -9,13 +9,13 @@ goog.require('game.core.math.Vector');
  * An entity. This can be a player, enemy, object or anything with a size,
  * position, scale.
  *
- * @param {game.core.math.Vector=} opt_position
- * @param {?number=} opt_w The width of the box.
- * @param {?number=} opt_h The height of the box.
- *
+ * @param {string=} opt_name The entity name, this will be registered in an
+ *     index by name.
  * @constructor
  */
-game.core.Entity = function(opt_position, opt_w, opt_h) {
+game.core.Entity = function(opt_name) {
+  /** @type {string} */
+  this.name = opt_name || '';
   /** @type {number} */
   this.width = 0;
   /** @type {number} */
@@ -42,6 +42,9 @@ game.core.Entity = function(opt_position, opt_w, opt_h) {
   this.addClass(game.core.Entity.CLASS_NAME);
 
   game.core.Entity.All.push(this);
+  if (!_.isUndefined(opt_name)) {
+    game.core.Entity.ByName[opt_name] = this;
+  }
 };
 
 
@@ -51,6 +54,14 @@ game.core.Entity = function(opt_position, opt_w, opt_h) {
  * @type {Array.<!game.core.Entity>}
  */
 game.core.Entity.All = [];
+
+
+/**
+ * All of the entities by name.
+ *
+ * @type {!Object.<string, !game.core.Entity>}
+ */
+game.core.Entity.ByName = {};
 
 
 /**
@@ -74,12 +85,12 @@ game.core.Entity.ID_COUNT = 0;
  * Iterates through all the active entities.
  *
  * @param {function()} callback
+ * @param {function()=} opt_context
  */
-game.core.Entity.forEach = function(callback) {
-  _.each(
-      _.filter(game.core.Entity.All, function(entity) {
-        return entity.isActive();
-      }), callback);
+game.core.Entity.forEach = function(callback, opt_context) {
+  _.each(_.filter(game.core.Entity.All, function(entity) {
+    return entity.isActive();
+  }), callback, opt_context);
 };
 
 

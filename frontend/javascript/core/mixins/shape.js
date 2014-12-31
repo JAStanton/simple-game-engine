@@ -41,8 +41,8 @@ game.mixins.Shape.Type = {
  * Initializes mixin.
  */
 game.mixins.Shape.prototype.init = function() {
-  /** @private {!game.mixins.Shape.Type} */
-  this.type_;
+  /** @type {!game.mixins.Shape.Type} */
+  this.type;
   /** @private {Array.<!game.core.math.Vector>} */
   this.points_;
   /** @private {Array.<!game.core.math.Vector>} */
@@ -73,7 +73,7 @@ game.mixins.Shape.prototype.init = function() {
  * @return {!game.mixins.Shape} This for chaining.
  */
 game.mixins.Shape.prototype.setPolygon = function(opt_pos, opt_points) {
-  this.type_ = game.mixins.Shape.Type.POLYGON;
+  this.type = game.mixins.Shape.Type.POLYGON;
   if (opt_pos) {
     this.setPosition(opt_pos);
   }
@@ -97,7 +97,7 @@ game.mixins.Shape.prototype.setPolygon = function(opt_pos, opt_points) {
  * @return {!game.mixins.Shape} This for chaining.
  */
 game.mixins.Shape.prototype.setCircle = function(opt_pos, opt_r) {
-  this.type_ = game.mixins.Shape.Type.CIRCLE;
+  this.type = game.mixins.Shape.Type.CIRCLE;
   if (opt_pos) {
     this.setPosition(opt_pos);
   }
@@ -117,7 +117,7 @@ game.mixins.Shape.prototype.setCircle = function(opt_pos, opt_r) {
  * @return {!game.mixins.Shape} This for chaining.
  */
 game.mixins.Shape.prototype.setRectangle = function(position, width, height) {
-  this.type_ = game.mixins.Shape.Type.RECTANGLE;
+  this.type = game.mixins.Shape.Type.RECTANGLE;
   this.angle_ = 0;
   this.offset_ = new game.core.math.Vector();
   this.setSize(width, height);
@@ -125,6 +125,22 @@ game.mixins.Shape.prototype.setRectangle = function(position, width, height) {
 
   this.recalc();
   return this;
+};
+
+
+/**
+ * Sets the size.
+ *
+ * @param {number} width
+ * @param {number} height
+ */
+game.mixins.Shape.prototype.setSize = function(width, height) {
+  this.points_ = [
+    new game.core.math.Vector(),
+    new game.core.math.Vector(width, 0),
+    new game.core.math.Vector(width, height),
+    new game.core.math.Vector(0, height)
+  ];
 };
 
 
@@ -290,7 +306,7 @@ game.mixins.Shape.prototype.draw = function() {
     this.el.appendChild(svg);
   }
 
-  if (this.type_ == game.mixins.Shape.Type.POLYGON) {
+  if (this.type == game.mixins.Shape.Type.POLYGON) {
     var path = svg.getElementsByTagName('path');
     if (path.length == 1) {
       path = path[0];
@@ -302,7 +318,7 @@ game.mixins.Shape.prototype.draw = function() {
     path.setAttributeNS(null, 'fill', this.fillColor_);
   }
 
-  if (this.type_ == game.mixins.Shape.Type.CIRCLE) {
+  if (this.type == game.mixins.Shape.Type.CIRCLE) {
     var circle = svg.getElementsByTagName('circle');
     if (circle.length == 1) {
       circle = circle[0];

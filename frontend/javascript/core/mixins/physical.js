@@ -218,39 +218,40 @@ game.mixins.Physical.prototype.update = function(delta) {
     this.updateVelocity(delta);
     this.updatePosition(delta);
   }
-  // Detects Collision
-  game.core.Entity.forEach(function(entity) {
-    // TODO(jstanton): Combine with non-instance collisions i.e.: game.Player
-    // collides with game.Wall.
-    _.each(this.colliders, function(callback, name) {
-      if (entity instanceof game.mixins.Physical.Colliders[name]) {
-        var response = new game.core.math.collision.Response();
-        var collision = game.core.math.collision;
-        var ShapeType = game.mixins.Shape.Type;
-        var didCollide = false;
 
-        if ((this.type == ShapeType.POLYGON ||
-            this.type == ShapeType.RECTANGLE) &&
-            (entity.type == ShapeType.POLYGON ||
-            entity.type == ShapeType.RECTANGLE)) {
-          didCollide = collision.testPolygonPolygon(this, entity, response);
-        } else if (this.type == ShapeType.CIRCLE &&
-            (entity.type == ShapeType.POLYGON ||
-            entity.type == ShapeType.RECTANGLE)) {
-          didCollide = collision.testCirclePolygon(this, entity, response);
-        } else if ((this.type == ShapeType.POLYGON ||
-            this.type == ShapeType.RECTANGLE) &&
-            entity.type == ShapeType.CIRCLE) {
-          didCollide = collision.testPolygonCircle(this, entity, response);
-        }
+  // TODO filter colliders by what's nearby.
+  _.each(this.colliders, function(callback, name) {
+    var entity = game.core.Entity.ByName[name];
+    if (_.isUndefined(entity)) {
+      console.warn('Entity registered as a collider but doesnt exist.');
+      return;
+    }
 
-        if (didCollide) {
-          this.resolveCollisions_(response, delta);
-          callback(entity);
-        }
-      }
-    }.bind(this));
-  }.bind(this));
+    var response = new game.core.math.collision.Response();
+    var collision = game.core.math.collision;
+    var ShapeType = game.mixins.Shape.Type;
+    var didCollide = false;
+
+    if ((this.type == ShapeType.POLYGON ||
+        this.type == ShapeType.RECTANGLE) &&
+        (entity.type == ShapeType.POLYGON ||
+        entity.type == ShapeType.RECTANGLE)) {
+      didCollide = collision.testPolygonPolygon(this, entity, response);
+    } else if (this.type == ShapeType.CIRCLE &&
+        (entity.type == ShapeType.POLYGON ||
+        entity.type == ShapeType.RECTANGLE)) {
+      didCollide = collision.testCirclePolygon(this, entity, response);
+    } else if ((this.type == ShapeType.POLYGON ||
+        this.type == ShapeType.RECTANGLE) &&
+        entity.type == ShapeType.CIRCLE) {
+      didCollide = collision.testPolygonCircle(this, entity, response);
+    }
+
+    if (didCollide) {
+      this.resolveCollisions_(response, delta);
+      callback(entity);
+    }
+  }, this);
 };
 
 
@@ -262,8 +263,7 @@ game.mixins.Physical.prototype.update = function(delta) {
  * @private
  */
 game.mixins.Physical.prototype.resolveCollisions_ = function(response, delta) {
-  var correction =
-      response.overlapV.clone().scale(game.Player.COLLISION_SMUDGE);
+  var correction = response.overlapV.clone().scale(1.01); // collision smudge
   var position = this.getPosition().sub(correction);
   var velocity = this.getVelocity();
   var normal = response.overlapN;
@@ -282,19 +282,6 @@ game.mixins.Physical.prototype.resolveCollisions_ = function(response, delta) {
 
   this.setVelocity(velocity);
   this.setPosition(position);
-};
-
-
-/**
- * Registers objects that can be collided with.
- *
- * @param {string} name
- * @param {!game.core.Entity} type
- * @return {!game.mixins.Physical}
- */
-game.mixins.Physical.prototype.registerCollider = function(name, type) {
-  game.mixins.Physical.Colliders[name] = type;
-  return this;
 };
 
 
@@ -323,11 +310,11 @@ game.mixins.Physical.prototype.registerCollidesWith =
   }
 
   _.each(names, function(name) {
-    if (_.isUndefined(game.mixins.Physical.Colliders[name])) {
-      console.warn('Warning:', name, 'Is not registered as a collider');
+    if (_.isUndefined(game.core.Entity.ByName[name])) {
+      console.warn('Warning: Unkown entity by this name:', name);
       return this;
     }
-
+    console.log('added collider:', name);
     this.colliders[name] = callback;
   }, this);
   return this;

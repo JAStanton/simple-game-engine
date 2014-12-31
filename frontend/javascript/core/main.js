@@ -96,7 +96,7 @@ game.core.Main.prototype.physicsLoop = function() {
   for (var step = 0; step < steps; step++) {
     game.core.Entity.forEach(function(entity) {
       entity.update(dtstep, this.globalTick_);
-    }.bind(this));
+    }, this);
     this.tick(this.globalTick_++);
   }
   this.lastTimeRan_ = currTime;

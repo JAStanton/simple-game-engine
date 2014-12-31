@@ -33,7 +33,7 @@ game.core.helper.scope = function(fn) {
  */
 game.core.helper.poly2path = function(polygon) {
   var pos = polygon.pos;
-  var points = polygon.calcPoints;
+  var points = polygon.calcPoints_;
   var result = 'M' + 0 + ' ' + 0;
   result += 'M' + points[0].x + ' ' + points[0].y;
   for (var i = 1; i < points.length; i++) {

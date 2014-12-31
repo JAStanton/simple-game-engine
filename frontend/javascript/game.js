@@ -40,8 +40,8 @@ game.Main = function() {
       setRectangle(new game.core.math.Vector(10, 10), 20, 20);
   this.player_.init();
   this.player_.registerCollidesWith(
-      'wall-0', 'wall-1', 'wall-2', 'wall-3', function() {
-        console.log("shit's going down");
+      'wall-0', 'wall-1', 'wall-2', 'wall-3', function(entity) {
+        console.log("shit's going down", entity.name);
       });
 
   /** @private {!game.core.Entity} */
@@ -55,20 +55,20 @@ game.core.helper.inherit(game.Main, game.core.Main);
 /**
  * Adds a platform
  *
- * @param {string} wallName
+ * @param {string} entityName
  * @param {number} top
  * @param {number} left
  * @param {number} width
  * @param {number} height
  */
-game.Main.prototype.addPlatform = function(wallName, top, left, width, height) {
-  var wall = new game.core.Entity().
+game.Main.prototype.addPlatform =
+    function(entityName, top, left, width, height) {
+  var wall = new game.core.Entity(entityName).
       addClass('boundary').
       mixin('shape', 'physical').
       setRectangle(new game.core.math.Vector(left, top), width, height).
       attach(this.gameBoard_);
   wall.init();
-  wall.registerCollider(wallName, game.core.Entity);
 };
 
 var main = new game.Main();
