@@ -18,6 +18,8 @@ game.core.Main = function(opt_rootLocation) {
     throw new Error('Main has already been initialized.');
   }
   game.core.Camera.prototype._initialized = true;
+  /** @private {!game.core.Entity} */
+  this.root_ = game.core.Main.Root;
   /** @private {!game.core.Window} */
   this.window_ = new game.core.Window();
   /** @private {Element|HTMLBodyElement|game.core.Entity} */
@@ -64,19 +66,18 @@ game.core.Main.Root = new game.core.Root();
  * Init function
  */
 game.core.Main.prototype.init = function() {
-  this.window_.registerListener(game.core.Window.RESIZE_LISTENER_EVENT_NAME,
-      function() {
-        game.core.Main.Root.setPosition(this.window_.getPosition());
-        game.core.Main.Root.setSize(
-            this.window_.getWidth(), this.window_.getHeight());
-      }.bind(this), true);
+  var RESIZE = game.core.Window.RESIZE_LISTENER_EVENT_NAME;
+  this.window_.registerListener(RESIZE, function() {
+    this.root_.setPosition(this.window_.getPosition());
+    this.root_.setSize(this.window_.getWidth(), this.window_.getHeight());
+  }.bind(this), true);
 
 
   game.core.Entity.forEach(function(entity) {
     entity.init();
   });
 
-  game.core.Main.Root.attach(this.rootLocation_);
+  this.root_.attach(this.rootLocation_);
 
   // Kick things off.
   this.physicsLoop();

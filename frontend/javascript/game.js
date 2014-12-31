@@ -14,8 +14,8 @@ goog.require('game.core.helper');
 game.Main = function() {
   game.Main.base(this, 'constructor');
 
-  var width = 500;
-  var height = 500;
+  var width = 1024;
+  var height = 768;
 
   /** @private {!game.Board} */
   this.gameboard_ = new game.core.Board().

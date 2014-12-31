@@ -19,7 +19,7 @@ game.core.Camera = function() {
   /** @private {!game.Board}*/
   this.board_ = new game.core.Board();
   /** @private {!game.core.Root}*/
-  this.viewport_ = new game.core.Root();
+  this.root_ = new game.core.Root();
   /** @private {!game.core.Camera.Axis} */
   this.axis_ = game.core.Camera.DEFAULT_AXIS_;
   /** @private {number} */
@@ -28,7 +28,6 @@ game.core.Camera = function() {
   this.lastY_ = 0;
   /** @private {array.<!game.core.Entity>} */
   this.layers_ = [];
-
   // Add the board as the first layer.
   this.addLayer(this.board_, 1);
 };
@@ -92,8 +91,8 @@ game.core.Camera.prototype.addLayer = function(layer, distance) {
 game.core.Camera.prototype.update = function(deltaTime) {
   var CameraAxis = game.core.Camera.Axis;
   var axis = this.axis_;
-  var hView = this.viewport_.getHeight();
-  var wView = this.viewport_.getWidth();
+  var hView = this.root_.getHeight();
+  var wView = this.root_.getWidth();
   var xView = this.board_.getPosition().x;
   var yView = this.board_.getPosition().y;
   var boardWidth = this.board_.getWidth();
@@ -102,13 +101,11 @@ game.core.Camera.prototype.update = function(deltaTime) {
   var yDeadZone = hView / 2;
 
   if (wView > boardWidth) {
-    wView = boardWidth;
     // I could scale here but it might look crappy. It would be cool though.
     console.warn('width is too large');
   }
 
   if (hView > boardHeight) {
-    hView = boardHeight;
     // I could scale here but it might look crappy. It would be cool though.
     console.warn('height is too large');
   }
