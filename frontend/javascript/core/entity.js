@@ -44,6 +44,7 @@ game.core.Entity = function(opt_name) {
   game.core.Entity.All.push(this);
   if (!_.isUndefined(opt_name)) {
     game.core.Entity.ByName[opt_name] = this;
+    this.addClass(opt_name);
   }
 };
 

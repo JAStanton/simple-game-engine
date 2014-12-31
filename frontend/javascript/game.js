@@ -15,21 +15,21 @@ game.Main = function() {
   game.Main.base(this, 'constructor');
 
   var width = 500;
-  var height = 300;
+  var height = 500;
 
   /** @private {!game.core.Entity} */
-  this.gameBoard_ = new game.core.Entity().
-      addClass('game-board').
+  this.viewPort_ = new game.core.Entity().
+      addClass('viewport').
       mixin('shape').
       setRectangle(new game.core.math.Vector(), width, height).
-      attach(this.root);
+      attach(game.core.Main.Root);
 
-  this.gameBoard_.init();
+  this.viewPort_.init();
 
-  this.addPlatform('wall-0', 0, 0, width, 5);
-  this.addPlatform('wall-1', 0, 0, 5, height);
-  this.addPlatform('wall-2', height - 5, 0, width, 5);
-  this.addPlatform('wall-3', 0, width - 5, 5, height);
+  this.addPlatform('wall-0', 0, 0, width * 2, 5);
+  this.addPlatform('wall-1', 0, 0, 5, height * 2);
+  this.addPlatform('wall-2', height * 2 - 5, 0, width * 2, 5);
+  this.addPlatform('wall-3', 0, width * 2 - 5, 5, height * 2);
 
   /** @private {!game.core.Entity} */
   this.player_ = new game.core.Entity().
@@ -37,17 +37,14 @@ game.Main = function() {
       mixin('fourway', 'shape', 'physical').
       setMass(1).
       setBouncyness(0.4).
-      attach(this.gameBoard_).
+      attach(this.viewPort_).
       setRectangle(new game.core.math.Vector(50, 50), 40, 40);
   this.player_.init();
-  this.player_.registerCollidesWith(
-      'wall-0', 'wall-1', 'wall-2', 'wall-3', function(entity) {
-        // console.log("shit's going down", entity.name);
-      });
+  this.player_.registerCollidesWith('wall-0', 'wall-1', 'wall-2', 'wall-3');
 
   /** @private {!game.core.Entity} */
-  this.camera_ = new game.core.Camera(this.gameBoard_).
-      addLayer(this.gameBoard_).
+  this.camera_ = new game.core.Camera(this.viewPort_).
+      addLayer(this.viewPort_).
       watch(this.player_);
 };
 game.core.helper.inherit(game.Main, game.core.Main);
@@ -68,7 +65,7 @@ game.Main.prototype.addPlatform =
       addClass('boundary').
       mixin('shape', 'physical').
       setRectangle(new game.core.math.Vector(left, top), width, height).
-      attach(this.gameBoard_);
+      attach(this.viewPort_);
   wall.init();
 };
 

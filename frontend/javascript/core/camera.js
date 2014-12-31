@@ -74,7 +74,7 @@ game.core.Camera.prototype.watch = function(entity, opt_axis) {
 game.core.Camera.prototype.addLayer = function(layer, distance) {
   this.layers_.push({
     layer: layer,
-    distance: distance
+    distance: distance || 1
   });
   return this;
 };
@@ -86,8 +86,8 @@ game.core.Camera.prototype.addLayer = function(layer, distance) {
  */
 game.core.Camera.prototype.update = function(deltaTime) {
   if (this.layers_.length == 0) return;
-  var bottomLayer = this.layers_[0];
-  var Axis = game.core.Camera.Axis;
+  var bottomLayer = this.layers_[0].layer;
+  var CameraAxis = game.core.Camera.Axis;
   var axis = this.axis_;
   var hView = this.viewport_.getHeight();
   var wView = this.viewport_.getWidth();
@@ -112,7 +112,7 @@ game.core.Camera.prototype.update = function(deltaTime) {
   if (this.watchedEntity_ != null) {
     var followedX = this.watchedEntity_.getPosition().x;
     var followedY = this.watchedEntity_.getPosition().y;
-    if (axis == Axis.HORIZONTAL || axis == Axis.BOTH) {
+    if (axis == CameraAxis.HORIZONTAL || axis == CameraAxis.BOTH) {
       if (followedX > wView - xDeadZone) {
         xView = (followedX - (wView - xDeadZone)) * - 1;
       } else {
@@ -122,7 +122,7 @@ game.core.Camera.prototype.update = function(deltaTime) {
       xView = Math.min(Math.max(xView, wView - boardWidth), 0);
     }
 
-    if (axis == Axis.VERTICAL || axis == Axis.BOTH) {
+    if (axis == CameraAxis.VERTICAL || axis == CameraAxis.BOTH) {
       if (followedY > hView - yDeadZone) {
         yView = (followedY - (hView - yDeadZone)) * - 1;
       } else {
@@ -139,6 +139,7 @@ game.core.Camera.prototype.update = function(deltaTime) {
   this.lastY_ = yView;
 
   _.each(this.layers_, function(l) {
-    l.layer.setPosition(xView * l.distance, yView * l.distance);
+    l.layer.setPosition(
+        new game.core.math.Vector(xView * l.distance, yView * l.distance));
   });
 };

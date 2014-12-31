@@ -1,6 +1,7 @@
 goog.provide('game.core.Main');
 
 goog.require('game.core.Entity');
+goog.require('game.core.Root');
 goog.require('game.core.Window');
 
 
@@ -37,8 +38,6 @@ game.core.Main = function(opt_rootLocation) {
    * @private {number}
    */
   this.globalTick_ = 0;
-  /** @type {!game.core.Entity} */
-  this.root = game.core.Main.Root = new game.core.Entity().addClass('root');
 
   // Initialize.
   this.init();
@@ -54,13 +53,31 @@ game.core.Main.FPS = 60;
 
 
 /**
+ * The framerate our game runs off on.
+ *
+ * @type {game.core.Entity}
+ */
+game.core.Main.Root = new game.core.Root();
+
+
+/**
  * Init function
  */
 game.core.Main.prototype.init = function() {
+  this.window_.registerListener(game.core.Window.RESIZE_LISTENER_EVENT_NAME,
+      function() {
+        game.core.Main.Root.setPosition(this.window_.getPosition());
+        game.core.Main.Root.setSize(
+            this.window_.getWidth(), this.window_.getHeight());
+      }.bind(this), true);
+
+
   game.core.Entity.forEach(function(entity) {
     entity.init();
   });
-  this.root.attach(this.rootLocation_);
+
+  game.core.Main.Root.attach(this.rootLocation_);
+
   // Kick things off.
   this.physicsLoop();
   this.renderLoop();
@@ -91,6 +108,10 @@ game.core.Main.prototype.physicsLoop = function() {
   var steps = Math.floor(dt / dtstep);
 
   this.physicsRemainderTime_ = dt - dtstep * steps;
+
+  if (!_.isUndefined(this.camera_)) {
+    this.camera_.update();
+  }
 
   // Update loop, we might have multiple steps per iteration.
   for (var step = 0; step < steps; step++) {

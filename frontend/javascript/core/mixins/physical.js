@@ -246,8 +246,6 @@ game.mixins.Physical.prototype.update = function(delta) {
     this.updatePosition(delta);
   }
 
-  console.log(this.getVelocity());
-
   // TODO filter colliders by what's nearby.
   _.each(this.colliders, function(callback, name) {
     var entity = game.core.Entity.ByName[name];
@@ -278,7 +276,9 @@ game.mixins.Physical.prototype.update = function(delta) {
 
     if (didCollide) {
       this.resolveCollisions_(response, delta);
-      callback(entity);
+      if (_.isFunction(callback)) {
+        callback(entity);
+      }
     }
   }, this);
 };
