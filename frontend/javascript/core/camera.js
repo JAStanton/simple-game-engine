@@ -1,7 +1,8 @@
 goog.provide('game.core.Camera');
 goog.provide('game.core.Camera.Axis');
 
-goog.require('game.core.Main');
+goog.require('game.core.Camera');
+goog.require('game.core.Root');
 
 
 
@@ -9,15 +10,16 @@ goog.require('game.core.Main');
  * Camera singleton class, the camera is responsible for updating the viewport.
  *
  * @constructor
- * @param {!game.core.Entity} gameBoard
  */
-game.core.Camera = function(gameBoard) {
+game.core.Camera = function() {
   if (game.core.Camera.prototype._singletonInstance) {
     return game.core.Camera.prototype._singletonInstance;
   }
   game.core.Camera.prototype._singletonInstance = this;
-  /** @private {!game.core.Entity} */
-  this.viewport_ = game.core.Main.Root;
+  /** @private {!game.Board}*/
+  this.board_ = new game.core.Board();
+  /** @private {!game.core.Root}*/
+  this.viewport_ = new game.core.Root();
   /** @private {!game.core.Camera.Axis} */
   this.axis_ = game.core.Camera.DEFAULT_AXIS_;
   /** @private {number} */
@@ -26,6 +28,9 @@ game.core.Camera = function(gameBoard) {
   this.lastY_ = 0;
   /** @private {array.<!game.core.Entity>} */
   this.layers_ = [];
+
+  // Add the board as the first layer.
+  this.addLayer(this.board_, 1);
 };
 
 
@@ -85,25 +90,25 @@ game.core.Camera.prototype.addLayer = function(layer, distance) {
  * @param {number} deltaTime
  */
 game.core.Camera.prototype.update = function(deltaTime) {
-  if (this.layers_.length == 0) return;
-  var bottomLayer = this.layers_[0].layer;
   var CameraAxis = game.core.Camera.Axis;
   var axis = this.axis_;
   var hView = this.viewport_.getHeight();
   var wView = this.viewport_.getWidth();
-  var xView = bottomLayer.getPosition().x;
-  var yView = bottomLayer.getPosition().y;
-  var boardWidth = bottomLayer.getWidth();
-  var boardHeight = bottomLayer.getHeight();
+  var xView = this.board_.getPosition().x;
+  var yView = this.board_.getPosition().y;
+  var boardWidth = this.board_.getWidth();
+  var boardHeight = this.board_.getHeight();
   var xDeadZone = wView / 2;
   var yDeadZone = hView / 2;
 
   if (wView > boardWidth) {
+    wView = boardWidth;
     // I could scale here but it might look crappy. It would be cool though.
     console.warn('width is too large');
   }
 
   if (hView > boardHeight) {
+    hView = boardHeight;
     // I could scale here but it might look crappy. It would be cool though.
     console.warn('height is too large');
   }
