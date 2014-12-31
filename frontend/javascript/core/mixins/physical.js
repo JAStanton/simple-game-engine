@@ -194,7 +194,7 @@ game.mixins.Physical.prototype.addYForce = function(force) {
 game.mixins.Physical.prototype.addGravity = function() {
   if (this.isMovable()) {
     var acc = this.getAcceleration();
-    acc.y += game.core.constants.GRAVITY;
+    acc.y = game.core.constants.GRAVITY;
     this.setAcceleration(acc);
   }
   return this;
@@ -241,7 +241,7 @@ game.mixins.Physical.prototype.updatePosition = function(delta) {
  */
 game.mixins.Physical.prototype.update = function(delta) {
   if (this.isMovable()) {
-    // this.addGravity(delta);
+    this.addGravity(delta);
     this.updateVelocity(delta);
     this.updatePosition(delta);
   }
