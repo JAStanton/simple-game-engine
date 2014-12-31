@@ -110,10 +110,6 @@ game.core.Main.prototype.physicsLoop = function() {
 
   this.physicsRemainderTime_ = dt - dtstep * steps;
 
-  if (!_.isUndefined(this.camera_)) {
-    this.camera_.update();
-  }
-
   // Update loop, we might have multiple steps per iteration.
   for (var step = 0; step < steps; step++) {
     game.core.Entity.forEach(function(entity) {
@@ -121,6 +117,11 @@ game.core.Main.prototype.physicsLoop = function() {
     }, this);
     this.tick(this.globalTick_++);
   }
+
+  if (!_.isUndefined(this.camera_)) {
+    this.camera_.update();
+  }
+
   this.lastTimeRan_ = currTime;
   setTimeout(this.physicsLoop.bind(this), 0);
 };
