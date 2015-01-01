@@ -46,26 +46,24 @@ goog.require('game.core.math.Vector');
  */
 game.mixins.Shape = function() {
   return {
-    init: function() {
-      /** @type {!game.mixins.Shape.Type} */
-      this.type;
-      /** @private {Array.<!game.core.math.Vector>} */
-      this.points_;
-      /** @private {Array.<!game.core.math.Vector>} */
-      this.calcPoints_;
-      /** @private {Array.<!game.core.math.Vector>} */
-      this.edges_;
-      /** @private {Array.<!game.core.math.Vector>} */
-      this.normals_;
-      /** @private {number} */
-      this.angle_ = 0;
-      /** @private {game.core.math.Vector} */
-      this.offset_ = new game.core.math.Vector();
-      /** @private {number} */
-      this.radius_;
-      /** @private {string} */
-      this.fillColor_ = 'black';
-    },
+    type: null,
+
+    points_: null,
+
+    calcPoints_: null,
+
+    edges_: null,
+
+    normals_: null,
+
+    angle_: 0,
+
+    offset_: new game.core.math.Vector(),
+
+    radius_: null,
+
+    fillColor_: 'black',
+
     setPolygon: function(opt_pos, opt_points) {
       this.type = game.mixins.Shape.Type.POLYGON;
       if (opt_pos) {
@@ -78,6 +76,7 @@ game.mixins.Shape = function() {
 
       return this;
     },
+
     setCircle: function(opt_pos, opt_r) {
       this.type = game.mixins.Shape.Type.CIRCLE;
       if (opt_pos) {
@@ -87,6 +86,7 @@ game.mixins.Shape = function() {
       this.setDirty(true);
       return this;
     },
+
     setRectangle: function(position, width, height) {
       this.type = game.mixins.Shape.Type.RECTANGLE;
       this.angle_ = 0;
@@ -97,6 +97,7 @@ game.mixins.Shape = function() {
       this.recalc();
       return this;
     },
+
     setSize: function(width, height) {
       this.points_ = [
         new game.core.math.Vector(),
@@ -105,21 +106,25 @@ game.mixins.Shape = function() {
         new game.core.math.Vector(0, height)
       ];
     },
+
     setPoints: function(opt_points) {
       this.points_ = opt_points;
       this.recalc();
       return this;
     },
+
     setAngle: function(angle) {
       this.angle_ = angle;
       this.recalc();
       return this;
     },
+
     setOffset: function(offset) {
       this.offset_ = offset;
       this.recalc();
       return this;
     },
+
     rotate: function(angle) {
       var points = this.points_;
       var len = points.length;
@@ -129,6 +134,7 @@ game.mixins.Shape = function() {
       this.recalc();
       return this;
     },
+
     recalc: function() {
       var i;
       // Calculated points - this is what is used for underlying collisions and
@@ -173,6 +179,7 @@ game.mixins.Shape = function() {
 
       return this;
     },
+
     translate: function(x, y) {
       var points = this.points_;
       var len = points.length;
@@ -183,8 +190,10 @@ game.mixins.Shape = function() {
       this.recalc();
       return this;
     },
+
     draw: function() {
-      if (!this.isDirty()) return;
+      if (!this.isDirty_) return;
+      this.isDirty_ = false;
 
       var svg = this.el.getElementsByTagName('svg');
       if (svg.length == 1) {
@@ -209,6 +218,8 @@ game.mixins.Shape = function() {
       if (this.type == game.mixins.Shape.Type.CIRCLE) {
         this.el.style.width = this.radius_ * 2 + 'px';
         this.el.style.height = this.radius_ * 2 + 'px';
+        this.el.style.marginLeft = this.radius_ * -1 + 'px';
+        this.el.style.marginTop = this.radius_ * -1 + 'px';
         this.el.style.borderRadius = '50%';
         this.el.style.backgroundColor = this.fillColor_;
       }
