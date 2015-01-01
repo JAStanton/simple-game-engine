@@ -84,7 +84,7 @@ game.mixins.Shape = function() {
         this.setPosition(opt_pos);
       }
       this.radius_ = opt_r || 0;
-
+      this.setDirty(true);
       return this;
     },
     setRectangle: function(position, width, height) {
@@ -207,18 +207,10 @@ game.mixins.Shape = function() {
       }
 
       if (this.type == game.mixins.Shape.Type.CIRCLE) {
-        var circle = svg.getElementsByTagName('circle');
-        if (circle.length == 1) {
-          circle = circle[0];
-        } else {
-          circle =
-              document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          svg.appendChild(circle);
-        }
-        circle.setAttributeNS(null, 'r', this.radius_);
-        circle.setAttributeNS(null, 'cx', this.radius_);
-        circle.setAttributeNS(null, 'cy', this.radius_);
-        circle.setAttributeNS(null, 'fill', this.fillColor_);
+        this.el.style.width = this.radius_ * 2 + 'px';
+        this.el.style.height = this.radius_ * 2 + 'px';
+        this.el.style.borderRadius = '50%';
+        this.el.style.backgroundColor = this.fillColor_;
       }
     }
   };

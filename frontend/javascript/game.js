@@ -27,6 +27,13 @@ game.Main = function() {
   this.addPlatform('wall-2', height - 5, 0, width, 5);
   this.addPlatform('wall-3', 0, width - 5, 5, height);
 
+  this.ball_ = new game.core.Entity('ball').
+      addClass('ball').
+      mixin('shape', 'physical').
+      setMass(0).
+      setCircle(new game.core.math.Vector(100, 200), 100).
+      attach(this.gameboard_);
+
   /** @private {!game.core.Entity} */
   this.player_ = new game.core.Entity().
       addClass('player').
@@ -34,10 +41,12 @@ game.Main = function() {
       setMass(1).
       setBouncyness(0.4).
       setFriction(0.1).
-      attach(this.gameboard_).
-      setRectangle(new game.core.math.Vector(50, 50), 40, 40);
+      setRectangle(new game.core.math.Vector(50, 50), 40, 40).
+      attach(this.gameboard_);
+
   this.player_.init();
-  this.player_.registerCollidesWith('wall-0', 'wall-1', 'wall-2', 'wall-3');
+  this.player_.registerCollidesWith(
+      'wall-0', 'wall-1', 'wall-2', 'wall-3', 'ball');
 
   /** @private {!game.core.Entity} */
   this.camera_ = new game.core.Camera().watch(this.player_);

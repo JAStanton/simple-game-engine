@@ -25,7 +25,7 @@ game.core.Entity = function(opt_name) {
   /** @type {number} */
   this.bottom = 0;
   /** @private {boolean} */
-  this.isDirty_ = false;
+  this.isDirty_ = true;
   /** @private {boolean} */
   this.isActive_ = true;
   /** @private {boolean} */
