@@ -8,7 +8,7 @@ goog.require('game.core.helper');
 
 /**
  * An entity mixin that gives the an entity the ability to move left, right, up
- * or down on arrow keys.
+ * or down on arrow keys. No new methods are introduced.
  *
  * @constructor
  */
