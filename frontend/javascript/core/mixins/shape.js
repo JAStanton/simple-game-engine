@@ -192,6 +192,7 @@ game.mixins.Shape = function() {
     },
 
     draw: function() {
+      // TODO(jstanton): use isDirty() and setDirty().
       if (!this.isDirty_) return;
       this.isDirty_ = false;
 
