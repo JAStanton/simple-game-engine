@@ -17,22 +17,22 @@ game.mixins.Fourway = function() {
   var keyHandler = new game.core.KeyHandler();
   var moveLeft = function() {
     var velocity = this.getVelocity();
-    velocity.x += -35 / 10;
+    velocity.x += -35;
     this.setVelocity(velocity);
   };
   var moveRight = function() {
     var velocity = this.getVelocity();
-    velocity.x += 35 / 10;
+    velocity.x += 35;
     this.setVelocity(velocity);
   };
   var moveUp = function() {
     var velocity = this.getVelocity();
-    velocity.y += -40 / 10;
+    velocity.y += -40;
     this.setVelocity(velocity);
   };
   var moveDown = function() {
     var velocity = this.getVelocity();
-    velocity.y += 40 / 10;
+    velocity.y += 40;
     this.setVelocity(velocity);
   };
   return {

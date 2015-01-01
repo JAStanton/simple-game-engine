@@ -4,7 +4,7 @@ goog.provide('game.core.constants');
 /**
  * @const {number}
  */
-game.core.constants.PIXEL_TO_METER = 10;
+game.core.constants.PIXEL_TO_METER = 100;
 
 
 /**
