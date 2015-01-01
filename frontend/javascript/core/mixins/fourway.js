@@ -12,62 +12,42 @@ goog.require('game.core.helper');
  *
  * @constructor
  */
-game.mixins.Fourway = function() {};
+game.mixins.Fourway = function() {
+  var Keycodes = game.core.constants.KEYCODES;
+  var keyHandler = new game.core.KeyHandler();
+  var moveLeft = function() {
+    var velocity = this.getVelocity();
+    velocity.x += -35 / 10;
+    this.setVelocity(velocity);
+  };
+  var moveRight = function() {
+    var velocity = this.getVelocity();
+    velocity.x += 35 / 10;
+    this.setVelocity(velocity);
+  };
+  var moveUp = function() {
+    var velocity = this.getVelocity();
+    velocity.y += -40 / 10;
+    this.setVelocity(velocity);
+  };
+  var moveDown = function() {
+    var velocity = this.getVelocity();
+    velocity.y += 40 / 10;
+    this.setVelocity(velocity);
+  };
+  return {
+    init: function() { },
+    update: function() {
+      if (keyHandler.isDown(Keycodes.RIGHT)) moveRight.call(this);
+      if (keyHandler.isDown(Keycodes.LEFT)) moveLeft.call(this);
+      if (keyHandler.isDown(Keycodes.UP)) moveUp.call(this);
+      if (keyHandler.isDown(Keycodes.DOWN)) moveDown.call(this);
+    }
+  };
+};
 
 
 /**
  * Register mixin globally.
  */
-game.core.helper.mixins['fourway'] = game.mixins.Fourway.prototype;
-
-
-/**
- * Initialized fourway.
- */
-game.mixins.Fourway.prototype.init = function() {
-  if (!this.keyHandler_) {
-    this.keyHandler_ = new game.core.KeyHandler();
-  }
-};
-
-
-/** moveLeft */
-game.mixins.Fourway.prototype.moveLeft = function() {
-  var velocity = this.getVelocity();
-  velocity.x += -35;
-  this.setVelocity(velocity);
-};
-
-
-/** moveRight */
-game.mixins.Fourway.prototype.moveRight = function() {
-  var velocity = this.getVelocity();
-  velocity.x += 35;
-  this.setVelocity(velocity);
-};
-
-
-/** moveUp */
-game.mixins.Fourway.prototype.moveUp = function() {
-  var velocity = this.getVelocity();
-  velocity.y += -40;
-  this.setVelocity(velocity);
-};
-
-
-/** moveDown */
-game.mixins.Fourway.prototype.moveDown = function() {
-  var velocity = this.getVelocity();
-  velocity.y += 40;
-  this.setVelocity(velocity);
-};
-
-
-/** Update function */
-game.mixins.Fourway.prototype.update = function() {
-  var Keycodes = game.core.constants.KEYCODES;
-  if (this.keyHandler_.isDown(Keycodes.RIGHT)) this.moveRight();
-  if (this.keyHandler_.isDown(Keycodes.LEFT)) this.moveLeft();
-  if (this.keyHandler_.isDown(Keycodes.UP)) this.moveUp();
-  if (this.keyHandler_.isDown(Keycodes.DOWN)) this.moveDown();
-};
+game.core.helper.mixins['fourway'] = game.mixins.Fourway;

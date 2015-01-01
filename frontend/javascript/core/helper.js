@@ -173,7 +173,9 @@ game.core.helper.mixin = function(klass) {
     if (_.isString(mixin)) {
       var mixinName = mixin;
       mixin = game.core.helper.mixins[mixin];
-      if (!_.isObject(mixin)) {
+      if (_.isFunction(mixin)) {
+        mixin = new mixin();
+      } else if (!_.isObject(mixin)) {
         console.warn('No mixin registered as:', mixinName);
         return;
       }

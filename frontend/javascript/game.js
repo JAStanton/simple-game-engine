@@ -33,6 +33,7 @@ game.Main = function() {
       mixin('fourway', 'shape', 'physical').
       setMass(1).
       setBouncyness(0.4).
+      setFriction(0.1).
       attach(this.gameboard_).
       setRectangle(new game.core.math.Vector(50, 50), 40, 40);
   this.player_.init();
