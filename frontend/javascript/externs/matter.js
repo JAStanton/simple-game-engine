@@ -13,137 +13,7 @@ var Matter = function() {};
 
 
 /** @constructor */
-Matter.Body = function() {};
-
-
-
-/** @constructor */
-Matter.Composite = function() {};
-
-
-
-/** @constructor */
-Matter.World = function() {};
-
-
-
-/** @constructor */
-Matter.Contact = function() {};
-
-
-
-/** @constructor */
-Matter.Detector = function() {};
-
-
-
-/** @constructor */
-Matter.Grid = function() {};
-
-
-
-/** @constructor */
-Matter.Pairs = function() {};
-
-
-
-/** @constructor */
-Matter.Pair = function() {};
-
-
-
-/** @constructor */
-Matter.Resolver = function() {};
-
-
-
-/** @constructor */
-Matter.SAT = function() {};
-
-
-
-/** @constructor */
-Matter.Constraint = function() {};
-
-
-
-/** @constructor */
-Matter.MouseConstraint = function() {};
-
-
-
-/** @constructor */
-Matter.Common = function() {};
-
-
-
-/** @constructor */
-Matter.Engine = function() {};
-
-
-
-/** @constructor */
-Matter.Metrics = function() {};
-
-
-
-/** @constructor */
-Matter.Mouse = function() {};
-
-
-
-/** @constructor */
-Matter.Sleeping = function() {};
-
-
-
-/** @constructor */
-Matter.Bodies = function() {};
-
-
-
-/** @constructor */
-Matter.Composites = function() {};
-
-
-
-/** @constructor */
 Matter.Axes = function() {};
-
-
-
-/** @constructor */
-Matter.Bounds = function() {};
-
-
-
-/** @constructor */
-Matter.Vector = function() {};
-
-
-
-/** @constructor */
-Matter.Vertices = function() {};
-
-
-
-/** @constructor */
-Matter.Render = function() {};
-
-
-
-/** @constructor */
-Matter.RenderPixi = function() {};
-
-
-
-/** @constructor */
-Matter.Events = function() {};
-
-
-
-/** @constructor */
-Matter.Query = function() {};
 
 
 /**
@@ -159,6 +29,11 @@ Matter.Axes.prototype.fromVertices = function(vertices) {};
  * @return {*|undefined}
  */
 Matter.Axes.prototype.rotate = function(axes, angle) {};
+
+
+
+/** @constructor */
+Matter.Bodies = function() {};
 
 
 /**
@@ -205,6 +80,11 @@ Matter.Bodies.prototype.rectangle = function(x, y, width, height, options) {};
  */
 Matter.Bodies.prototype.trapezoid =
     function(x, y, width, height, slope, options) {};
+
+
+
+/** @constructor */
+Matter.Body = function() {};
 
 
 /**
@@ -335,6 +215,11 @@ Matter.Body.prototype.updateAll =
     function(bodies, deltaTime, timeScale, correction, worldBounds) {};
 
 
+
+/** @constructor */
+Matter.Bounds = function() {};
+
+
 /**
  * @param  {*} bounds
  * @param  {*} point
@@ -381,6 +266,11 @@ Matter.Bounds.prototype.translate = function(bounds, vector) {};
  * @return {*|undefined}
  */
 Matter.Bounds.prototype.update = function(bounds, vertices, velocity) {};
+
+
+
+/** @constructor */
+Matter.Common = function() {};
 
 
 /**
@@ -491,6 +381,11 @@ Matter.Common.prototype.sign = function(value) {};
  * @return {*|undefined}
  */
 Matter.Common.prototype.values = function(obj) {};
+
+
+
+/** @constructor */
+Matter.Composite = function() {};
 
 
 /**
@@ -656,6 +551,11 @@ Matter.Composite.prototype.setModified =
     function(composite, isModified, updateParents, updateChildren) {};
 
 
+
+/** @constructor */
+Matter.Composites = function() {};
+
+
 /**
  * @param  {*} xx
  * @param  {*} yy
@@ -750,6 +650,11 @@ Matter.Composites.prototype.stack =
     function(xx, yy, columns, rows, columnGap, rowGap, callback) {};
 
 
+
+/** @constructor */
+Matter.Constraint = function() {};
+
+
 /**
  * @param  {*} options
  * @return {*|undefined}
@@ -780,6 +685,11 @@ Matter.Constraint.prototype.solve = function(constraint, timeScale) {};
 Matter.Constraint.prototype.solveAll = function(constraints, timeScale) {};
 
 
+
+/** @constructor */
+Matter.Contact = function() {};
+
+
 /**
  * @param  {*} vertex
  * @return {*|undefined}
@@ -792,6 +702,11 @@ Matter.Contact.prototype.create = function(vertex) {};
  * @return {*|undefined}
  */
 Matter.Contact.prototype.id = function(vertex) {};
+
+
+
+/** @constructor */
+Matter.Detector = function() {};
 
 
 /**
@@ -808,6 +723,11 @@ Matter.Detector.prototype.bruteForce = function(bodies, engine) {};
  * @return {*|undefined}
  */
 Matter.Detector.prototype.collisions = function(broadphasePairs, engine) {};
+
+
+
+/** @constructor */
+Matter.Engine = function() {};
 
 
 /**
@@ -856,6 +776,11 @@ Matter.Engine.prototype.run = function(engine) {};
 Matter.Engine.prototype.update = function(engine, delta, correction) {};
 
 
+
+/** @constructor */
+Matter.Events = function() {};
+
+
 /**
  * @param  {*}   object
  * @param  {*}   eventNames
@@ -883,6 +808,11 @@ Matter.Events.prototype.on = function(object, eventNames, callback) {};
 Matter.Events.prototype.trigger = function(object, eventNames, event) {};
 
 
+
+/** @constructor */
+Matter.Grid = function() {};
+
+
 /**
  * @param  {*} grid
  * @return {*|undefined}
@@ -908,6 +838,11 @@ Matter.Grid.prototype.create = function(bucketWidth, bucketHeight) {};
 Matter.Grid.prototype.update = function(grid, bodies, engine, forceUpdate) {};
 
 
+
+/** @constructor */
+Matter.Metrics = function() {};
+
+
 /**
  * @return {*|undefined}
  */
@@ -927,6 +862,11 @@ Matter.Metrics.prototype.reset = function(metrics) {};
  * @return {*|undefined}
  */
 Matter.Metrics.prototype.update = function(metrics, engine) {};
+
+
+
+/** @constructor */
+Matter.Mouse = function() {};
 
 
 /**
@@ -970,6 +910,11 @@ Matter.Mouse.prototype.setOffset = function(mouse, offset) {};
 Matter.Mouse.prototype.setScale = function(mouse, scale) {};
 
 
+
+/** @constructor */
+Matter.MouseConstraint = function() {};
+
+
 /**
  * @param  {*} engine
  * @param  {*} options
@@ -984,6 +929,11 @@ Matter.MouseConstraint.prototype.create = function(engine, options) {};
  * @return {*|undefined}
  */
 Matter.MouseConstraint.prototype.update = function(mouseConstraint, bodies) {};
+
+
+
+/** @constructor */
+Matter.Pair = function() {};
 
 
 /**
@@ -1019,6 +969,11 @@ Matter.Pair.prototype.setActive = function(pair, isActive, timestamp) {};
 Matter.Pair.prototype.update = function(pair, collision, timestamp) {};
 
 
+
+/** @constructor */
+Matter.Pairs = function() {};
+
+
 /**
  * @param  {*} pairs
  * @return {*|undefined}
@@ -1050,6 +1005,11 @@ Matter.Pairs.prototype.removeOld = function(pairs, timestamp) {};
 Matter.Pairs.prototype.update = function(pairs, collisions, timestamp) {};
 
 
+
+/** @constructor */
+Matter.Query = function() {};
+
+
 /**
  * @param  {*} bodies
  * @param  {*} startPoint
@@ -1068,6 +1028,11 @@ Matter.Query.prototype.ray =
  * @return {*|undefined}
  */
 Matter.Query.prototype.region = function(bodies, bounds, outside) {};
+
+
+
+/** @constructor */
+Matter.Render = function() {};
 
 
 /**
@@ -1212,6 +1177,11 @@ Matter.Render.prototype.setBackground = function(render, background) {};
 Matter.Render.prototype.world = function(engine) {};
 
 
+
+/** @constructor */
+Matter.RenderPixi = function() {};
+
+
 /**
  * @param  {*} engine
  * @param  {*} body
@@ -1256,6 +1226,11 @@ Matter.RenderPixi.prototype.setBackground = function(render, background) {};
 Matter.RenderPixi.prototype.world = function(engine) {};
 
 
+
+/** @constructor */
+Matter.Resolver = function() {};
+
+
 /**
  * @param  {*} bodies
  * @return {*|undefined}
@@ -1286,6 +1261,11 @@ Matter.Resolver.prototype.solvePosition = function(pairs, timeScale) {};
 Matter.Resolver.prototype.solveVelocity = function(pairs, timeScale) {};
 
 
+
+/** @constructor */
+Matter.SAT = function() {};
+
+
 /**
  * @param  {*} bodyA
  * @param  {*} bodyB
@@ -1293,6 +1273,11 @@ Matter.Resolver.prototype.solveVelocity = function(pairs, timeScale) {};
  * @return {*|undefined}
  */
 Matter.SAT.prototype.collides = function(bodyA, bodyB, previousCollision) {};
+
+
+
+/** @constructor */
+Matter.Sleeping = function() {};
 
 
 /**
@@ -1314,6 +1299,11 @@ Matter.Sleeping.prototype.set = function(body, isSleeping) {};
  * @return {*|undefined}
  */
 Matter.Sleeping.prototype.update = function(bodies) {};
+
+
+
+/** @constructor */
+Matter.Vector = function() {};
 
 
 /**
@@ -1431,6 +1421,11 @@ Matter.Vector.prototype.rotateAbout = function(vector, angle, point) {};
 Matter.Vector.prototype.sub = function(vectorA, vectorB) {};
 
 
+
+/** @constructor */
+Matter.Vertices = function() {};
+
+
 /**
  * @param  {*} vertices
  * @param  {*} signed
@@ -1516,6 +1511,11 @@ Matter.Vertices.prototype.scale = function(vertices, scaleX, scaleY, point) {};
  * @return {*|undefined}
  */
 Matter.Vertices.prototype.translate = function(vertices, vector, scalar) {};
+
+
+
+/** @constructor */
+Matter.World = function() {};
 
 
 /**
