@@ -1,7 +1,7 @@
-goog.provide('game.core.Window');
+goog.provide('engine.core.Window');
 
-goog.require('game.core.Entity');
-goog.require('game.core.helper');
+goog.require('engine.core.Entity');
+goog.require('engine.core.helper');
 
 
 
@@ -10,30 +10,30 @@ goog.require('game.core.helper');
  * dimensions.
  *
  * @constructor
- * @extends {!game.core.Entity}
+ * @extends {!engine.core.Entity}
  */
-game.core.Window = function() {
-  if (game.core.Window.prototype._singletonInstance) {
-    return game.core.Window.prototype._singletonInstance;
+engine.core.Window = function() {
+  if (engine.core.Window.prototype._singletonInstance) {
+    return engine.core.Window.prototype._singletonInstance;
   }
-  game.core.Window.prototype._singletonInstance = this;
-  game.core.Window.base(this, 'constructor');
-  game.core.helper.mixin(this, 'shape', 'listenable');
+  engine.core.Window.prototype._singletonInstance = this;
+  engine.core.Window.base(this, 'constructor');
+  engine.core.helper.mixin(this, 'shape', 'listenable');
   this.resize_();
   this.registerListener(
-      game.core.Window.RESIZE_LISTENER_EVENT_NAME, this.resize_.bind(this));
+      engine.core.Window.RESIZE_LISTENER_EVENT_NAME, this.resize_.bind(this));
   window.addEventListener(
-      game.core.Window.RESIZE_LISTENER_EVENT_NAME,
+      engine.core.Window.RESIZE_LISTENER_EVENT_NAME,
       this.callListeners.bind(
-          this, game.core.Window.RESIZE_LISTENER_EVENT_NAME));
+          this, engine.core.Window.RESIZE_LISTENER_EVENT_NAME));
 };
-game.core.helper.inherit(game.core.Window, game.core.Entity);
+engine.core.helper.inherit(engine.core.Window, engine.core.Entity);
 
 
 /**
  * @const {string}
  */
-game.core.Window.RESIZE_LISTENER_EVENT_NAME = 'resize';
+engine.core.Window.RESIZE_LISTENER_EVENT_NAME = 'resize';
 
 
 /**
@@ -41,7 +41,7 @@ game.core.Window.RESIZE_LISTENER_EVENT_NAME = 'resize';
  *
  * @private
  */
-game.core.Window.prototype.resize_ = function() {
+engine.core.Window.prototype.resize_ = function() {
   this.setSize(document.documentElement.clientWidth,
       document.documentElement.clientHeight);
 };

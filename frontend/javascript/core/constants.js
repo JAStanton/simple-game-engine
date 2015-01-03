@@ -1,22 +1,22 @@
-goog.provide('game.core.constants');
+goog.provide('engine.core.constants');
 
 
 /**
  * @const {number}
  */
-game.core.constants.PIXEL_TO_METER = 100;
+engine.core.constants.PIXEL_TO_METER = 100;
 
 
 /**
  * @const {number}
  */
-game.core.constants.GRAVITY = 9.8 * game.core.constants.PIXEL_TO_METER;
+engine.core.constants.GRAVITY = 9.8 * engine.core.constants.PIXEL_TO_METER;
 
 
 /**
  * @const {number}
  */
-game.core.constants.EPSILON = 0.01;
+engine.core.constants.EPSILON = 0.01;
 
 
 /**
@@ -27,7 +27,7 @@ game.core.constants.EPSILON = 0.01;
  *
  * @enum {number}
  */
-game.core.constants.KEYCODES = {
+engine.core.constants.KEYCODES = {
   MAC_ENTER: 3,
   BACKSPACE: 8,
   TAB: 9,

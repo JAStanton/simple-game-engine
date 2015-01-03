@@ -1,7 +1,7 @@
 goog.provide('game.Main');
 
-goog.require('game.core.Main');
-goog.require('game.core.helper');
+goog.require('engine.core.Main');
+goog.require('engine.core.helper');
 
 
 
@@ -9,7 +9,7 @@ goog.require('game.core.helper');
  * The game.
  *
  * @constructor
- * @extends {game.core.Main}
+ * @extends {engine.core.Main}
  */
 game.Main = function() {
   game.Main.base(this, 'constructor');
@@ -18,9 +18,9 @@ game.Main = function() {
   this.height = 802;
 
   /** @private {!game.Board} */
-  this.gameboard_ = new game.core.Board().
-      setRectangle(new game.core.math.Vector(), this.width, this.height).
-      attach(game.core.Main.Root);
+  this.gameboard_ = new engine.core.Board().
+      setRectangle(new engine.core.math.Vector(), this.width, this.height).
+      attach(engine.core.Main.Root);
 
   this.addPlatform(0, 0, this.width, 5);
   this.addPlatform(0, 0, 5, this.height);
@@ -33,23 +33,23 @@ game.Main = function() {
     this.addRandomShape();
   }
 
-  /** @private {!game.core.Entity} */
-  this.player_ = new game.core.Entity().
+  /** @private {!engine.core.Entity} */
+  this.player_ = new engine.core.Entity().
       addClass('player').
       mixin('fourway', 'shape', 'physical').
       setMass(1).
       setBouncyness(0.4).
       setFriction(0.1).
-      setRectangle(new game.core.math.Vector(50, 50), 40, 40).
+      setRectangle(new engine.core.math.Vector(50, 50), 40, 40).
       attach(this.gameboard_);
 
   this.player_.init();
   this.player_.registerCollidesWith('walls', 'balls', 'shapes');
 
-  /** @private {!game.core.Entity} */
-  this.camera_ = new game.core.Camera().watch(this.player_);
+  /** @private {!engine.core.Entity} */
+  this.camera_ = new engine.core.Camera().watch(this.player_);
 };
-game.core.helper.inherit(game.Main, game.core.Main);
+engine.core.helper.inherit(game.Main, engine.core.Main);
 
 
 /**
@@ -61,11 +61,10 @@ game.core.helper.inherit(game.Main, game.core.Main);
  * @param {number} height
  */
 game.Main.prototype.addPlatform = function(top, left, width, height) {
-  var wall = new game.core.Entity('walls').
-      addClass('boundary').
+  var wall = new engine.core.Entity('walls').
       mixin('shape', 'physical').
       setFillColor('black').
-      setRectangle(new game.core.math.Vector(left, top), width, height).
+      setRectangle(new engine.core.math.Vector(left, top), width, height).
       attach(this.gameboard_);
   wall.init();
 };
@@ -75,14 +74,14 @@ game.Main.prototype.addPlatform = function(top, left, width, height) {
  * Adds a randomly placed ball
 */
 game.Main.prototype.addRandomBall = function() {
-  var radius = game.core.helper.getRandomInt(10, 75);
-  var x = game.core.helper.getRandomInt(radius, this.width - radius);
-  var y = game.core.helper.getRandomInt(radius, this.height - radius);
-  var ball_ = new game.core.Entity('balls').
+  var radius = engine.core.helper.getRandomInt(10, 75);
+  var x = engine.core.helper.getRandomInt(radius, this.width - radius);
+  var y = engine.core.helper.getRandomInt(radius, this.height - radius);
+  var ball_ = new engine.core.Entity('balls').
       mixin('shape', 'physical').
       setFillColor(Please.make_color()).
       setMass(0).
-      setCircle(new game.core.math.Vector(x, y), radius).
+      setCircle(new engine.core.math.Vector(x, y), radius).
       attach(this.gameboard_);
 
   ball_.init();
@@ -94,23 +93,23 @@ game.Main.prototype.addRandomBall = function() {
 */
 game.Main.prototype.addRandomShape = function() {
   var polygon = [];
-  var radius = game.core.helper.getRandomInt(10, 75);
-  var centerX = game.core.helper.getRandomInt(0, this.width - radius * 2);
-  var centerY = game.core.helper.getRandomInt(0, this.height - radius * 2);
-  var numPoints = game.core.helper.getRandomInt(3, 12);
+  var radius = engine.core.helper.getRandomInt(10, 75);
+  var centerX = engine.core.helper.getRandomInt(0, this.width - radius * 2);
+  var centerY = engine.core.helper.getRandomInt(0, this.height - radius * 2);
+  var numPoints = engine.core.helper.getRandomInt(3, 12);
   var theta = 360 / numPoints;
   var PI2 = 2 * Math.PI;
   for (var i = 1; i <= numPoints; i++) {
     var x = radius * Math.cos(PI2 * i / numPoints + theta) + radius;
     var y = radius * Math.sin(PI2 * i / numPoints + theta) + radius;
-    polygon.push(new game.core.math.Vector(x, y));
+    polygon.push(new engine.core.math.Vector(x, y));
   }
 
-  var shape_ = new game.core.Entity('shapes').
+  var shape_ = new engine.core.Entity('shapes').
       mixin('shape', 'physical').
       setFillColor(Please.make_color()).
       setMass(0).
-      setPolygon(new game.core.math.Vector(centerX, centerY), polygon).
+      setPolygon(new engine.core.math.Vector(centerX, centerY), polygon).
       attach(this.gameboard_);
 
   shape_.init();

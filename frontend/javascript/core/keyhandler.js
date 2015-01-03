@@ -1,4 +1,4 @@
-goog.provide('game.core.KeyHandler');
+goog.provide('engine.core.KeyHandler');
 
 
 
@@ -7,11 +7,11 @@ goog.provide('game.core.KeyHandler');
  *
  * @constructor
  */
-game.core.KeyHandler = function() {
-  if (game.core.KeyHandler.prototype._singletonInstance) {
-    return game.core.KeyHandler.prototype._singletonInstance;
+engine.core.KeyHandler = function() {
+  if (engine.core.KeyHandler.prototype._singletonInstance) {
+    return engine.core.KeyHandler.prototype._singletonInstance;
   }
-  game.core.KeyHandler.prototype._singletonInstance = this;
+  engine.core.KeyHandler.prototype._singletonInstance = this;
   /**
    * True if we should respons to keyUp and keyDown.
    * @type {Boolean}
@@ -38,7 +38,7 @@ game.core.KeyHandler = function() {
  *
  * @private
  */
-game.core.KeyHandler.prototype.visibilityChanged_ = function() {
+engine.core.KeyHandler.prototype.visibilityChanged_ = function() {
   if (document.hidden) {
     this.pressed_ = {};
   }
@@ -49,7 +49,7 @@ game.core.KeyHandler.prototype.visibilityChanged_ = function() {
  * @param {!Event} evt
  * @private
  */
-game.core.KeyHandler.prototype.mouseDown_ = function(evt) {
+engine.core.KeyHandler.prototype.mouseDown_ = function(evt) {
   if (evt.which != 1) {
     this.pressed_ = {};
   }
@@ -62,7 +62,7 @@ game.core.KeyHandler.prototype.mouseDown_ = function(evt) {
  * @param {!game.constants.KEYCODES} keyCode
  * @return {boolean} true if key is down.
  */
-game.core.KeyHandler.prototype.isDown = function(keyCode) {
+engine.core.KeyHandler.prototype.isDown = function(keyCode) {
   return !!this.pressed_[keyCode];
 };
 
@@ -73,7 +73,7 @@ game.core.KeyHandler.prototype.isDown = function(keyCode) {
  * @param {!Event} evt
  * @private
  */
-game.core.KeyHandler.prototype.onKeydown_ = function(evt) {
+engine.core.KeyHandler.prototype.onKeydown_ = function(evt) {
   var keyCode = evt.keyCode;
   if (this.ignoreKeys) return;
   if (this.isDown(keyCode)) return;
@@ -87,7 +87,7 @@ game.core.KeyHandler.prototype.onKeydown_ = function(evt) {
  * @param {!Event} evt
  * @private
  */
-game.core.KeyHandler.prototype.onKeyup_ = function(evt) {
+engine.core.KeyHandler.prototype.onKeyup_ = function(evt) {
   var keyCode = evt.keyCode;
   if (this.ignoreKeys) return;
   delete this.pressed_[keyCode];

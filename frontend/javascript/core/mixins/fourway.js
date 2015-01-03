@@ -1,8 +1,8 @@
 goog.provide('game.mixins.Fourway');
 
-goog.require('game.core.KeyHandler');
-goog.require('game.core.constants');
-goog.require('game.core.helper');
+goog.require('engine.core.KeyHandler');
+goog.require('engine.core.constants');
+goog.require('engine.core.helper');
 
 
 
@@ -13,8 +13,8 @@ goog.require('game.core.helper');
  * @constructor
  */
 game.mixins.Fourway = function() {
-  var Keycodes = game.core.constants.KEYCODES;
-  var keyHandler = new game.core.KeyHandler();
+  var Keycodes = engine.core.constants.KEYCODES;
+  var keyHandler = new engine.core.KeyHandler();
   var moveLeft = function() {
     var velocity = this.getVelocity();
     velocity.x += -35;
@@ -50,4 +50,4 @@ game.mixins.Fourway = function() {
 /**
  * Register mixin globally.
  */
-game.core.helper.mixins['fourway'] = game.mixins.Fourway;
+engine.core.helper.mixins['fourway'] = game.mixins.Fourway;

@@ -2,8 +2,8 @@ goog.provide('game.mixins.Shape');
 goog.provide('game.mixins.Shape.Type');
 goog.provide('game.mixins.UnitSquare');
 
-goog.require('game.core.Entity');
-goog.require('game.core.math.Vector');
+goog.require('engine.core.Entity');
+goog.require('engine.core.math.Vector');
 
 
 
@@ -58,7 +58,7 @@ game.mixins.Shape = function() {
 
     angle_: 0,
 
-    offset_: new game.core.math.Vector(),
+    offset_: new engine.core.math.Vector(),
 
     radius_: null,
 
@@ -80,7 +80,7 @@ game.mixins.Shape = function() {
       }
       this.points_ = opt_points || [];
       this.angle_ = 0;
-      this.offset_ = new game.core.math.Vector();
+      this.offset_ = new engine.core.math.Vector();
       this.recalc();
 
       return this;
@@ -99,7 +99,7 @@ game.mixins.Shape = function() {
     setRectangle: function(position, width, height) {
       this.type = game.mixins.Shape.Type.RECTANGLE;
       this.angle_ = 0;
-      this.offset_ = new game.core.math.Vector();
+      this.offset_ = new engine.core.math.Vector();
       this.setSize(width, height);
       this.setPosition(position);
 
@@ -109,10 +109,10 @@ game.mixins.Shape = function() {
 
     setSize: function(width, height) {
       this.points_ = [
-        new game.core.math.Vector(),
-        new game.core.math.Vector(width, 0),
-        new game.core.math.Vector(width, height),
-        new game.core.math.Vector(0, height)
+        new engine.core.math.Vector(),
+        new engine.core.math.Vector(width, 0),
+        new engine.core.math.Vector(width, height),
+        new engine.core.math.Vector(0, height)
       ];
     },
 
@@ -178,8 +178,8 @@ game.mixins.Shape = function() {
       for (i = 0; i < len; i++) {
         var p1 = calcPoints[i];
         var p2 = i < len - 1 ? calcPoints[i + 1] : calcPoints[0];
-        var e = new game.core.math.Vector().copy(p2).sub(p1);
-        var n = new game.core.math.Vector().copy(e).perp().normalize();
+        var e = new engine.core.math.Vector().copy(p2).sub(p1);
+        var n = new engine.core.math.Vector().copy(e).perp().normalize();
         edges.push(e);
         normals.push(n);
       }
@@ -225,7 +225,7 @@ game.mixins.Shape = function() {
           path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
           svg.appendChild(path);
         }
-        path.setAttributeNS(null, 'd', game.core.helper.poly2path(this));
+        path.setAttributeNS(null, 'd', engine.core.helper.poly2path(this));
         path.setAttributeNS(null, 'fill', this.fillColor_);
       }
 
@@ -245,7 +245,7 @@ game.mixins.Shape = function() {
 /**
  * Register mixin globally.
  */
-game.core.helper.mixins['shape'] = game.mixins.Shape;
+engine.core.helper.mixins['shape'] = game.mixins.Shape;
 
 
 /**
@@ -264,12 +264,12 @@ game.mixins.Shape.Type = {
 /**
  * Unit square polygon used for polygon hit detection.
  *
- * @extends {game.core.Entity}
+ * @extends {engine.core.Entity}
  * @constructor
  */
 game.mixins.UnitSquare = function() {
   game.mixins.UnitSquare.base(this, 'constructor');
-  this.setPosition(new game.core.math.Vector());
+  this.setPosition(new engine.core.math.Vector());
   this.setSize(1, 1);
 };
-game.core.helper.inherit(game.mixins.UnitSquare, game.core.Entity);
+engine.core.helper.inherit(game.mixins.UnitSquare, engine.core.Entity);

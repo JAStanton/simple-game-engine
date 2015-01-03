@@ -1,12 +1,12 @@
-goog.provide('game.core.math.collision');
-goog.provide('game.core.math.collision.helper');
+goog.provide('engine.core.math.collision');
+goog.provide('engine.core.math.collision.helper');
 
-goog.require('game.core.helper');
-goog.require('game.core.math.Vector');
+goog.require('engine.core.helper');
+goog.require('engine.core.math.Vector');
 goog.require('game.mixins.UnitSquare');
 
 
-game.core.helper.scope(function() {
+engine.core.helper.scope(function() {
   /**
    * An object representing the result of an intersection. Contains:
    *  - The two objects participating in the intersection
@@ -19,11 +19,11 @@ game.core.helper.scope(function() {
    *
    * @constructor
    */
-  game.core.math.collision.Response = function() {
+  engine.core.math.collision.Response = function() {
     this.a = null;
     this.b = null;
-    this.overlapN = new game.core.math.Vector();
-    this.overlapV = new game.core.math.Vector();
+    this.overlapN = new engine.core.math.Vector();
+    this.overlapV = new engine.core.math.Vector();
     this.clear();
   };
 
@@ -33,9 +33,9 @@ game.core.helper.scope(function() {
    * tests if you are going to reuse a single Response object for multiple
    * intersection tests (recommented as it will avoid allcating extra memory)
    *
-   * @return {game.core.math.collision.Response} This for chaining
+   * @return {engine.core.math.collision.Response} This for chaining
    */
-  game.core.math.collision.Response.prototype.clear = function() {
+  engine.core.math.collision.Response.prototype.clear = function() {
     this.aInB = true;
     this.bInA = true;
     this.overlap = Number.MAX_VALUE;
@@ -45,15 +45,17 @@ game.core.helper.scope(function() {
 
 
   // Alias to help life be easy!
-  var helper = game.core.math.collision.helper;
+  var helper = engine.core.math.collision.helper;
   /**
-   * A pool of `game.core.math.Vector` objects that are used in calculations to
-   * avoid allocating memory.
+   * A pool of `engine.core.math.Vector` objects that are used in calculations
+   * to avoid allocating memory.
    *
-   * @type {Array.<game.core.math.Vector>}
+   * @type {Array.<engine.core.math.Vector>}
    */
   var T_VECTORS = [];
-  for (var i = 0; i < 10; i++) { T_VECTORS.push(new game.core.math.Vector()); }
+  for (var i = 0; i < 10; i++) {
+    T_VECTORS.push(new engine.core.math.Vector());
+  }
 
 
   /**
@@ -69,9 +71,9 @@ game.core.helper.scope(function() {
   /**
    * Temporary response used for polygon hit detection.
    *
-   * @type {!game.core.math.collision.Response}
+   * @type {!engine.core.math.collision.Response}
    */
-  var T_RESPONSE = new game.core.math.collision.Response();
+  var T_RESPONSE = new engine.core.math.collision.Response();
 
 
   /**
@@ -87,8 +89,8 @@ game.core.helper.scope(function() {
    * resulting in a one dimensional range of the minimum and
    * maximum value on that axis.
    *
-   * @param {Array.<game.core.math.Vector>} points The points to flatten.
-   * @param {game.core.math.Vector} normal The unit vector axis to flatten on.
+   * @param {Array.<engine.core.math.Vector>} points The points to flatten.
+   * @param {engine.core.math.Vector} normal The unit vector axis to flatten on.
    * @param {Array.<number>} result An array.  After calling this function,
    *   result[0] will be the minimum value,
    *   result[1] will be the maximum value.
@@ -111,15 +113,15 @@ game.core.helper.scope(function() {
    * Check whether two convex polygons are separated by the specified
    * axis (must be a unit vector).
    *
-   * @param {game.core.math.Vector} aPos The position of the first polygon.
-   * @param {game.core.math.Vector} bPos The position of the second polygon.
-   * @param {Array.<game.core.math.Vector>} aPoints The points in the first
+   * @param {engine.core.math.Vector} aPos The position of the first polygon.
+   * @param {engine.core.math.Vector} bPos The position of the second polygon.
+   * @param {Array.<engine.core.math.Vector>} aPoints The points in the first
    *     polygon.
-   * @param {Array.<game.core.math.Vector>} bPoints The points in the second
+   * @param {Array.<engine.core.math.Vector>} bPoints The points in the second
    *     polygon.
-   * @param {game.core.math.Vector} axis The axis (unit sized) to test against.
-   *     The points of both polygons will be projected onto this axis.
-   * @param {game.core.math.collision.Response=} opt_response A response
+   * @param {engine.core.math.Vector} axis The axis (unit sized) to test
+   *     against. The points of both polygons will be projected onto this axis.
+   * @param {engine.core.math.collision.Response=} opt_response A response
    *     object (optional) which will be populated if the axis is not a
    *     separating axis.
    * @return {boolean} true if it is a separating axis, false otherwise.
@@ -205,8 +207,8 @@ game.core.helper.scope(function() {
    *     (-1)  [S]--------------[E]  (1)
    *            |       (0)      |
    *
-   * @param {game.core.math.Vector} line The line segment.
-   * @param {game.core.math.Vector} point The point.
+   * @param {engine.core.math.Vector} line The line segment.
+   * @param {engine.core.math.Vector} point The point.
    * @return  {number} LEFT_VORNOI_REGION (-1) if it is the left region,
    *          MIDDLE_VORNOI_REGION (0) if it is the middle region,
    *          RIGHT_VORNOI_REGION (1) if it is the right region.
@@ -248,12 +250,12 @@ game.core.helper.scope(function() {
   /**
    * Check if a point is inside a circle.
    *
-   * @param {game.core.math.Vector} p The point to test.
+   * @param {engine.core.math.Vector} p The point to test.
    * @param {Circle} c The circle to test.
    * @return {boolean} true if the point is inside the circle, false if it is
    *     not.
    */
-  game.core.math.collision.pointInCircle = function(p, c) {
+  engine.core.math.collision.pointInCircle = function(p, c) {
     var differenceV = T_VECTORS.pop().copy(p).sub(c.position_);
     var radiusSq = c.radius_ * c.radius_;
     var distanceSq = differenceV.len2();
@@ -267,15 +269,15 @@ game.core.helper.scope(function() {
   /**
    * Check if a point is inside a convex polygon.
    *
-   * @param {game.core.math.Vector} p The point to test.
+   * @param {engine.core.math.Vector} p The point to test.
    * @param {Polygon} poly The polygon to test.
    * @return {boolean} true if the point is inside the polygon, false if it is
    *     not.
    */
-  game.core.math.collision.pointInPolygon = function(p, poly) {
+  engine.core.math.collision.pointInPolygon = function(p, poly) {
     UNIT_SQUARE.position_.copy(p);
     T_RESPONSE.clear();
-    var result = game.core.math.collision.testPolygonPolygon(
+    var result = engine.core.math.collision.testPolygonPolygon(
         UNIT_SQUARE, poly, T_RESPONSE);
     if (result) {
       result = T_RESPONSE.aInB;
@@ -289,11 +291,11 @@ game.core.helper.scope(function() {
    *
    * @param {Circle} a The first circle.
    * @param {Circle} b The second circle.
-   * @param {game.core.math.collision.Response=} opt_response Response
+   * @param {engine.core.math.collision.Response=} opt_response Response
    *     object (optional) that will be populated if the circles intersect.
    * @return {boolean} true if the circles intersect, false if they don't.
    */
-  game.core.math.collision.testCircleCircle = function(a, b, opt_response) {
+  engine.core.math.collision.testCircleCircle = function(a, b, opt_response) {
     var response = opt_response;
     // Check if the distance between the centers of the two
     // circles is greater than their combined radius.
@@ -327,11 +329,11 @@ game.core.helper.scope(function() {
    *
    * @param {Polygon} polygon The polygon.
    * @param {Circle} circle The circle.
-   * @param {game.core.math.collision.Response=} opt_response A Response
+   * @param {engine.core.math.collision.Response=} opt_response A Response
    *     object (optional) that will be populated if they interset.
    * @return {boolean} true if they intersect, false if they don't.
    */
-  game.core.math.collision.testPolygonCircle =
+  engine.core.math.collision.testPolygonCircle =
       function(polygon, circle, opt_response) {
     var response = opt_response;
     // Get the position of the circle relative to the polygon.
@@ -483,16 +485,16 @@ game.core.helper.scope(function() {
    *
    * @param {Circle} circle The circle.
    * @param {Polygon} polygon The polygon.
-   * @param {game.core.math.collision.Response=} opt_response A.Response
+   * @param {engine.core.math.collision.Response=} opt_response A.Response
    *     object (optional) that will be populated if they interset.
    * @return {boolean} true if they intersect, false if they don't.
    */
-  game.core.math.collision.testCirclePolygon =
+  engine.core.math.collision.testCirclePolygon =
       function(circle, polygon, opt_response) {
     var response = opt_response;
     // Test the polygon against the circle.
     var result =
-        game.core.math.collision.testPolygonCircle(polygon, circle, response);
+        engine.core.math.collision.testPolygonCircle(polygon, circle, response);
     if (result && response) {
       // Swap A and B in the response.
       var a = response.a;
@@ -513,12 +515,12 @@ game.core.helper.scope(function() {
    *
    * @param {Polygon} a The first polygon.
    * @param {Polygon} b The second polygon.
-   * @param {game.core.math.collision.Response=} opt_response
-   *     game.core.math.collision.Response object (optional) that will be
+   * @param {engine.core.math.collision.Response=} opt_response
+   *     engine.core.math.collision.Response object (optional) that will be
    *     populated if they interset.
    * @return {boolean} true if they intersect, false if they don't.
    */
-  game.core.math.collision.testPolygonPolygon = function(a, b, opt_response) {
+  engine.core.math.collision.testPolygonPolygon = function(a, b, opt_response) {
     var response = opt_response;
     var aPoints = a.calcPoints_;
     var aLen = aPoints.length;
@@ -560,4 +562,4 @@ game.core.helper.scope(function() {
     }
     return true;
   };
-});  // game.core.helper.scope
+});  // engine.core.helper.scope

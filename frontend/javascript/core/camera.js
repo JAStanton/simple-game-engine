@@ -1,8 +1,8 @@
-goog.provide('game.core.Camera');
-goog.provide('game.core.Camera.Axis');
+goog.provide('engine.core.Camera');
+goog.provide('engine.core.Camera.Axis');
 
-goog.require('game.core.Camera');
-goog.require('game.core.Root');
+goog.require('engine.core.Camera');
+goog.require('engine.core.Root');
 
 
 
@@ -11,22 +11,22 @@ goog.require('game.core.Root');
  *
  * @constructor
  */
-game.core.Camera = function() {
-  if (game.core.Camera.prototype._singletonInstance) {
-    return game.core.Camera.prototype._singletonInstance;
+engine.core.Camera = function() {
+  if (engine.core.Camera.prototype._singletonInstance) {
+    return engine.core.Camera.prototype._singletonInstance;
   }
-  game.core.Camera.prototype._singletonInstance = this;
+  engine.core.Camera.prototype._singletonInstance = this;
   /** @private {!game.Board}*/
-  this.board_ = new game.core.Board();
-  /** @private {!game.core.Root}*/
-  this.root_ = new game.core.Root();
-  /** @private {!game.core.Camera.Axis} */
-  this.axis_ = game.core.Camera.DEFAULT_AXIS_;
+  this.board_ = new engine.core.Board();
+  /** @private {!engine.core.Root}*/
+  this.root_ = new engine.core.Root();
+  /** @private {!engine.core.Camera.Axis} */
+  this.axis_ = engine.core.Camera.DEFAULT_AXIS_;
   /** @private {number} */
   this.lastX_ = 0;
   /** @private {number} */
   this.lastY_ = 0;
-  /** @private {array.<!game.core.Entity>} */
+  /** @private {array.<!engine.core.Entity>} */
   this.layers_ = [];
   // Add the board as the first layer.
   this.addLayer(this.board_, 1);
@@ -38,7 +38,7 @@ game.core.Camera = function() {
  *
  * @enum {number}
  */
-game.core.Camera.Axis = {
+engine.core.Camera.Axis = {
   NONE: 0,
   HORIZONTAL: 1,
   VERTICAL: 2,
@@ -47,22 +47,22 @@ game.core.Camera.Axis = {
 
 
 /**
- * @private {!game.core.Camera.Axis}
+ * @private {!engine.core.Camera.Axis}
  */
-game.core.Camera.DEFAULT_AXIS_ = game.core.Camera.Axis.BOTH;
+engine.core.Camera.DEFAULT_AXIS_ = engine.core.Camera.Axis.BOTH;
 
 
 /**
  * Sets the reference to the point the camera is tracking.
  *
- * @param {!game.core.Entity} entity The reference to the point the camera is
+ * @param {!engine.core.Entity} entity The reference to the point the camera is
  *     tracking. (Really anything that has {@code game.mixins.Rectangle}).
- * @param {?game.core.Camera.Axis=} opt_axis
- * @return {game.core.Camera}
+ * @param {?engine.core.Camera.Axis=} opt_axis
+ * @return {engine.core.Camera}
  */
-game.core.Camera.prototype.watch = function(entity, opt_axis) {
+engine.core.Camera.prototype.watch = function(entity, opt_axis) {
   this.watchedEntity_ = entity;
-  this.axis_ = opt_axis || game.core.Camera.DEFAULT_AXIS_;
+  this.axis_ = opt_axis || engine.core.Camera.DEFAULT_AXIS_;
   return this;
 };
 
@@ -70,12 +70,12 @@ game.core.Camera.prototype.watch = function(entity, opt_axis) {
 /**
  * Registers a layer to be displayed behind the board.
  *
- * @param {!game.core.Entity} layer
+ * @param {!engine.core.Entity} layer
  * @param {number} distance A number from 0 - 1 determines how far away form the
  *     camera it appears to be.
-  * @return {game.core.Camera}
+  * @return {engine.core.Camera}
  */
-game.core.Camera.prototype.addLayer = function(layer, distance) {
+engine.core.Camera.prototype.addLayer = function(layer, distance) {
   this.layers_.push({
     layer: layer,
     distance: distance || 1
@@ -88,8 +88,8 @@ game.core.Camera.prototype.addLayer = function(layer, distance) {
  * Update the camera's position.
  * @param {number} deltaTime
  */
-game.core.Camera.prototype.update = function(deltaTime) {
-  var CameraAxis = game.core.Camera.Axis;
+engine.core.Camera.prototype.update = function(deltaTime) {
+  var CameraAxis = engine.core.Camera.Axis;
   var axis = this.axis_;
   var hView = this.root_.getHeight();
   var wView = this.root_.getWidth();
@@ -142,6 +142,6 @@ game.core.Camera.prototype.update = function(deltaTime) {
 
   _.each(this.layers_, function(l) {
     l.layer.setPosition(
-        new game.core.math.Vector(xView * l.distance, yView * l.distance));
+        new engine.core.math.Vector(xView * l.distance, yView * l.distance));
   });
 };

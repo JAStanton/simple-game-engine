@@ -1,4 +1,4 @@
-goog.provide('game.core.math.Vector');
+goog.provide('engine.core.math.Vector');
 
 
 
@@ -12,7 +12,7 @@ goog.provide('game.core.math.Vector');
 * @param {?number=} opt_y The y position.
 * @constructor
 */
-game.core.math.Vector = function(opt_x, opt_y) {
+engine.core.math.Vector = function(opt_x, opt_y) {
   this.x = opt_x || 0;
   this.y = opt_y || 0;
 };
@@ -24,7 +24,7 @@ game.core.math.Vector = function(opt_x, opt_y) {
  * @param {Vector} other The other Vector.
  * @return {Vector} This for chaining.
  */
-game.core.math.Vector.prototype.copy = function(other) {
+engine.core.math.Vector.prototype.copy = function(other) {
   this.x = other.x;
   this.y = other.y;
   return this;
@@ -36,8 +36,8 @@ game.core.math.Vector.prototype.copy = function(other) {
  *
  * @return {Vector} The new cloned vector
  */
-game.core.math.Vector.prototype.clone = function() {
-  return new game.core.math.Vector(this.x, this.y);
+engine.core.math.Vector.prototype.clone = function() {
+  return new engine.core.math.Vector(this.x, this.y);
 };
 
 
@@ -47,7 +47,7 @@ game.core.math.Vector.prototype.clone = function() {
  *
  * @return {Vector} This for chaining.
  */
-game.core.math.Vector.prototype.perp = function() {
+engine.core.math.Vector.prototype.perp = function() {
   var x = this.x;
   this.x = this.y;
   this.y = -x;
@@ -61,7 +61,7 @@ game.core.math.Vector.prototype.perp = function() {
  * @param {number} angle The angle to rotate (in radians)
  * @return {Vector} This for chaining.
  */
-game.core.math.Vector.prototype.rotate = function(angle) {
+engine.core.math.Vector.prototype.rotate = function(angle) {
   var x = this.x;
   var y = this.y;
   this.x = x * Math.cos(angle) - y * Math.sin(angle);
@@ -75,7 +75,7 @@ game.core.math.Vector.prototype.rotate = function(angle) {
  *
  * @return {Vector} This for chaining.
  */
-game.core.math.Vector.prototype.reverse = function() {
+engine.core.math.Vector.prototype.reverse = function() {
   this.x = -this.x;
   this.y = -this.y;
   return this;
@@ -87,7 +87,7 @@ game.core.math.Vector.prototype.reverse = function() {
  *
  * @return {Vector} This for chaining.
  */
-game.core.math.Vector.prototype.normalize = function() {
+engine.core.math.Vector.prototype.normalize = function() {
   var d = this.len();
   if (d > 0) {
     this.x = this.x / d;
@@ -103,7 +103,7 @@ game.core.math.Vector.prototype.normalize = function() {
  * @param {Vector} other The other Vector.
  * @return {Vector} This for chaining.
  */
-game.core.math.Vector.prototype.add = function(other) {
+engine.core.math.Vector.prototype.add = function(other) {
   this.x += other.x;
   this.y += other.y;
   return this;
@@ -116,7 +116,7 @@ game.core.math.Vector.prototype.add = function(other) {
  * @param {Vector} other The other Vector.
  * @return {Vector} This for chaiing.
  */
-game.core.math.Vector.prototype.sub = function(other) {
+engine.core.math.Vector.prototype.sub = function(other) {
   this.x -= other.x;
   this.y -= other.y;
   return this;
@@ -132,7 +132,7 @@ game.core.math.Vector.prototype.sub = function(other) {
  *     not specified, the x scaling factor will be used.
  * @return {Vector} This for chaining.
  */
-game.core.math.Vector.prototype.scale = function(x, opt_y) {
+engine.core.math.Vector.prototype.scale = function(x, opt_y) {
   this.x *= x;
   this.y *= opt_y || x;
   return this;
@@ -145,7 +145,7 @@ game.core.math.Vector.prototype.scale = function(x, opt_y) {
  * @param {Vector} other The vector to project onto.
  * @return {Vector} This for chaining.
  */
-game.core.math.Vector.prototype.project = function(other) {
+engine.core.math.Vector.prototype.project = function(other) {
   var amt = this.dot(other) / other.len2();
   this.x = amt * other.x;
   this.y = amt * other.y;
@@ -160,7 +160,7 @@ game.core.math.Vector.prototype.project = function(other) {
  * @param {Vector} other The unit vector to project onto.
  * @return {Vector} This for chaining.
  */
-game.core.math.Vector.prototype.projectN = function(other) {
+engine.core.math.Vector.prototype.projectN = function(other) {
   var amt = this.dot(other);
   this.x = amt * other.x;
   this.y = amt * other.y;
@@ -174,7 +174,7 @@ game.core.math.Vector.prototype.projectN = function(other) {
  * @param {Vector} axis The vector representing the axis.
  * @return {Vector} This for chaining.
  */
-game.core.math.Vector.prototype.reflect = function(axis) {
+engine.core.math.Vector.prototype.reflect = function(axis) {
   var x = this.x;
   var y = this.y;
   this.project(axis).scale(2);
@@ -192,7 +192,7 @@ game.core.math.Vector.prototype.reflect = function(axis) {
  * @param {Vector} axis The unit vector representing the axis.
  * @return {Vector} This for chaining.
  */
-game.core.math.Vector.prototype.reflectN = function(axis) {
+engine.core.math.Vector.prototype.reflectN = function(axis) {
   var x = this.x;
   var y = this.y;
   this.projectN(axis).scale(2);
@@ -208,7 +208,7 @@ game.core.math.Vector.prototype.reflectN = function(axis) {
  * @param {Vector}  other The vector to dot this one against.
  * @return {number} The dot product.
  */
-game.core.math.Vector.prototype.dot = function(other) {
+engine.core.math.Vector.prototype.dot = function(other) {
   return this.x * other.x + this.y * other.y;
 };
 
@@ -218,7 +218,7 @@ game.core.math.Vector.prototype.dot = function(other) {
  *
  * @return {number} The length^2 of this vector.
  */
-game.core.math.Vector.prototype.len2 = function() {
+engine.core.math.Vector.prototype.len2 = function() {
   return this.dot(this);
 };
 
@@ -228,7 +228,7 @@ game.core.math.Vector.prototype.len2 = function() {
  *
  * @return {number} The length of this vector.
  */
-game.core.math.Vector.prototype.len = function() {
+engine.core.math.Vector.prototype.len = function() {
   return Math.sqrt(this.len2());
 };
 
@@ -236,10 +236,10 @@ game.core.math.Vector.prototype.len = function() {
 /**
  * Distance between this vector and the given.
  *
- * @param {game.core.math.Vector} other
+ * @param {engine.core.math.Vector} other
  * @return {number}
  */
-game.core.math.Vector.prototype.distanceTo = function(other) {
+engine.core.math.Vector.prototype.distanceTo = function(other) {
   var xs = other.x - this.x;
   xs = xs * xs;
   var ys = other.y - this.y;

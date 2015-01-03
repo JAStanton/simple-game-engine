@@ -1,9 +1,9 @@
 goog.provide('game.mixins.Physical');
 
-goog.require('game.core.constants');
-goog.require('game.core.helper');
-goog.require('game.core.math.Vector');
-goog.require('game.core.math.collision');
+goog.require('engine.core.constants');
+goog.require('engine.core.helper');
+goog.require('engine.core.math.Vector');
+goog.require('engine.core.math.collision');
 goog.require('game.mixins.Shape.Type');
 
 
@@ -28,16 +28,16 @@ goog.require('game.mixins.Shape.Type');
  */
 game.mixins.Physical = function() {
   var ShapeType = game.mixins.Shape.Type;
-  var collision = game.core.math.collision;
-  var GRAVITY = game.core.constants.GRAVITY;
-  var EPSILON = game.core.constants.EPSILON;
+  var collision = engine.core.math.collision;
+  var GRAVITY = engine.core.constants.GRAVITY;
+  var EPSILON = engine.core.constants.EPSILON;
 
   // Collision smudge, when colliding with the wall it's nice to just subtract
   // a little bit so you're not always colliding with something.
   var SMUDGE = 1.01;
   var colliders = {};
-  var acceleration = new game.core.math.Vector();
-  var velocity = new game.core.math.Vector();
+  var acceleration = new engine.core.math.Vector();
+  var velocity = new engine.core.math.Vector();
   var mass = 0;
   var friction = 0.5;
   var bouncyness = 0.5;
@@ -104,7 +104,7 @@ game.mixins.Physical = function() {
 
       // TODO filter colliders by what's nearby.
       _.each(colliders, function(callback, name) {
-        var entities = game.core.Entity.ByName[name];
+        var entities = engine.core.Entity.ByName[name];
         for (var i = 0; i < entities.length; i++) {
           var entity = entities[i];
           if (_.isUndefined(entity)) {
@@ -112,7 +112,7 @@ game.mixins.Physical = function() {
             return;
           }
 
-          var response = new game.core.math.collision.Response();
+          var response = new engine.core.math.collision.Response();
           var didCollide = false;
 
           if ((this.type == ShapeType.POLYGON ||
@@ -217,7 +217,7 @@ game.mixins.Physical = function() {
       }
 
       _.each(names, function(name) {
-        if (_.isUndefined(game.core.Entity.ByName[name])) {
+        if (_.isUndefined(engine.core.Entity.ByName[name])) {
           console.warn('Warning: Unkown entity by this name:', name);
           return this;
         }
@@ -232,12 +232,12 @@ game.mixins.Physical = function() {
 /**
  * Register mixin globally.
  */
-game.core.helper.mixins['physical'] = game.mixins.Physical;
+engine.core.helper.mixins['physical'] = game.mixins.Physical;
 
 
 /**
  * Global registered Collider.
  *
- * @type {Object.<string, !game.core.Entity>}
+ * @type {Object.<string, !engine.core.Entity>}
  */
 game.mixins.Physical.Colliders = {};

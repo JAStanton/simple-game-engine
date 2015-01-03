@@ -1,12 +1,12 @@
-goog.provide('game.core.helper');
-goog.provide('game.core.helper.object');
-goog.provide('game.core.helper.string');
+goog.provide('engine.core.helper');
+goog.provide('engine.core.helper.object');
+goog.provide('engine.core.helper.string');
 
 
 /**
  * Reference to the global context.  In most cases this will be 'window'.
  */
-game.core.helper.global = this;
+engine.core.helper.global = this;
 
 
 /**
@@ -19,8 +19,8 @@ game.core.helper.global = this;
  *     to namespaces (e.g. "var dom = goog.dom") or classes
  *     (e.g. "var Timer = goog.Timer").
  */
-game.core.helper.scope = function(fn) {
-  fn.call(game.core.helper.global);
+engine.core.helper.scope = function(fn) {
+  fn.call(engine.core.helper.global);
 };
 
 
@@ -28,10 +28,10 @@ game.core.helper.scope = function(fn) {
  * Converts a polygon to a path, the pos should translate the container element
  * so we don't have to redraw the polygon every frame.
  *
- * @param {!game.core.Entity} polygon
+ * @param {!engine.core.Entity} polygon
  * @return {string}
  */
-game.core.helper.poly2path = function(polygon) {
+engine.core.helper.poly2path = function(polygon) {
   var pos = polygon.pos;
   var points = polygon.calcPoints_;
   var result = 'M' + 0 + ' ' + 0;
@@ -51,10 +51,11 @@ game.core.helper.poly2path = function(polygon) {
  * it will not update add the transform because that is default.
  *
  * @param {Element} element
- * @param {game.core.math.Vector=} opt_position
- * @param {game.core.math.Vector=} opt_scale
+ * @param {engine.core.math.Vector=} opt_position
+ * @param {engine.core.math.Vector=} opt_scale
  */
-game.core.helper.updateTranslate = function(element, opt_position, opt_scale) {
+engine.core.helper.updateTranslate =
+    function(element, opt_position, opt_scale) {
   var transform = '';
   if (opt_position) {
     transform = 'translate(' +
@@ -82,7 +83,7 @@ game.core.helper.updateTranslate = function(element, opt_position, opt_scale) {
  * @return {!Object.<K,V>} Clone of the input object.
  * @template K,V
  */
-game.core.helper.object.clone = function(obj) {
+engine.core.helper.object.clone = function(obj) {
   var res = {};
   for (var key in obj) {
     res[key] = obj[key];
@@ -102,7 +103,7 @@ game.core.helper.object.clone = function(obj) {
  * function ChildClass(a, b, c) {
  *   ChildClass.base(this, 'constructor', a, b);
  * }
- * game.core.helper.inherit(ChildClass, ParentClass);
+ * engine.core.helper.inherit(ChildClass, ParentClass);
  *
  * var child = new ChildClass('a', 'b', 'see');
  * child.foo(); // This works.
@@ -111,7 +112,7 @@ game.core.helper.object.clone = function(obj) {
  * @param {Function} childCtor Child class.
  * @param {Function} parentCtor Parent class.
  */
-game.core.helper.inherit = function(childCtor, parentCtor) {
+engine.core.helper.inherit = function(childCtor, parentCtor) {
   /** @constructor */
   function tempCtor() {};
   tempCtor.prototype = parentCtor.prototype;
@@ -149,7 +150,7 @@ game.core.helper.inherit = function(childCtor, parentCtor) {
  *
  * @type {Object}
  */
-game.core.helper.mixins = {};
+engine.core.helper.mixins = {};
 
 
 /**
@@ -162,7 +163,7 @@ game.core.helper.mixins = {};
  * @param {Function} klass
  * @return {Function}
  */
-game.core.helper.mixin = function(klass) {
+engine.core.helper.mixin = function(klass) {
   var mixins = _.chain(arguments).toArray().rest().flatten().value();
   // Allows mixing into the constructor's prototype or the dynamic instance
   var obj = klass.prototype || klass;
@@ -172,7 +173,7 @@ game.core.helper.mixin = function(klass) {
   _(mixins).each(function(mixin) {
     if (_.isString(mixin)) {
       var mixinName = mixin;
-      mixin = game.core.helper.mixins[mixin];
+      mixin = engine.core.helper.mixins[mixin];
       if (_.isFunction(mixin)) {
         mixin = new mixin();
       } else if (!_.isObject(mixin)) {
@@ -230,9 +231,9 @@ game.core.helper.mixin = function(klass) {
  * @param {Element} element
  * @param  {stromg} prefix
  */
-game.core.helper.removeClassPrefix = function(element, prefix) {
+engine.core.helper.removeClassPrefix = function(element, prefix) {
   var classes = _.filter(element.classList, function(className) {
-    return game.core.helper.string.startsWith(className, prefix);
+    return engine.core.helper.string.startsWith(className, prefix);
   });
   _.each(classes, function(className) {
     element.classList.remove(className);
@@ -247,7 +248,7 @@ game.core.helper.removeClassPrefix = function(element, prefix) {
  * @param {string} starts
  * @return {boolean}
  */
-game.core.helper.string.startsWith = function(str, starts) {
+engine.core.helper.string.startsWith = function(str, starts) {
   if (starts === '') return true;
   if (str == null || starts == null) return false;
   str = String(str); starts = String(starts);
@@ -262,6 +263,6 @@ game.core.helper.string.startsWith = function(str, starts) {
  * @param {number} max
  * @return {number} Number between 0 and 1
  */
-game.core.helper.getRandomInt = function(min, max) {
+engine.core.helper.getRandomInt = function(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };

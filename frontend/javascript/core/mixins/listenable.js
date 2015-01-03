@@ -1,6 +1,6 @@
 goog.provide('game.mixins.Listenable');
 
-goog.require('game.core.helper');
+goog.require('engine.core.helper');
 
 
 
@@ -17,7 +17,7 @@ game.mixins.Listenable = function() {};
 /**
  * Register mixin globally.
  */
-game.core.helper.mixins['listenable'] = game.mixins.Listenable.prototype;
+engine.core.helper.mixins['listenable'] = game.mixins.Listenable.prototype;
 
 
 /**

@@ -1,7 +1,7 @@
-goog.provide('game.core.Board');
+goog.provide('engine.core.Board');
 
-goog.require('game.core.Entity');
-goog.require('game.core.helper');
+goog.require('engine.core.Entity');
+goog.require('engine.core.helper');
 
 
 
@@ -11,19 +11,19 @@ goog.require('game.core.helper');
  * @constructor
  * @extends {Game.Entity}
  */
-game.core.Board = function() {
-  if (game.core.Board.prototype._singletonInstance) {
-    return game.core.Board.prototype._singletonInstance;
+engine.core.Board = function() {
+  if (engine.core.Board.prototype._singletonInstance) {
+    return engine.core.Board.prototype._singletonInstance;
   }
-  game.core.helper.mixin(this, 'shape');
-  game.core.Board.prototype._singletonInstance = this;
-  game.core.Board.base(this, 'constructor');
-  this.el.classList.add(game.core.Board.CLASS_NAME);
+  engine.core.helper.mixin(this, 'shape');
+  engine.core.Board.prototype._singletonInstance = this;
+  engine.core.Board.base(this, 'constructor');
+  this.el.classList.add(engine.core.Board.CLASS_NAME);
 };
-game.core.helper.inherit(game.core.Board, game.core.Entity);
+engine.core.helper.inherit(engine.core.Board, engine.core.Entity);
 
 
 /**
  * @type {String}
  */
-game.core.Board.CLASS_NAME = 'board';
+engine.core.Board.CLASS_NAME = 'board';

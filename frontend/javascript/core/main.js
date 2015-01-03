@@ -1,8 +1,8 @@
-goog.provide('game.core.Main');
+goog.provide('engine.core.Main');
 
-goog.require('game.core.Entity');
-goog.require('game.core.Root');
-goog.require('game.core.Window');
+goog.require('engine.core.Entity');
+goog.require('engine.core.Root');
+goog.require('engine.core.Window');
 
 
 
@@ -10,19 +10,20 @@ goog.require('game.core.Window');
  * The main entry point into the application, extend this and get going.
  *
  * @constructor
- * @param {Element=|HTMLBodyElement=|game.core.Entity=} opt_rootLocation
+ * @param {Element=|HTMLBodyElement=|engine.core.Entity=} opt_rootLocation
  */
-game.core.Main = function(opt_rootLocation) {
-  // Ensure we don't have more than one {@code game.core.Main} floating around.
-  if (game.core.Camera.prototype._initialized) {
+engine.core.Main = function(opt_rootLocation) {
+  // Ensure we don't have more than one {@code engine.core.Main} floating
+  // around.
+  if (engine.core.Camera.prototype._initialized) {
     throw new Error('Main has already been initialized.');
   }
-  game.core.Camera.prototype._initialized = true;
-  /** @private {!game.core.Entity} */
-  this.root_ = game.core.Main.Root;
-  /** @private {!game.core.Window} */
-  this.window_ = new game.core.Window();
-  /** @private {Element|HTMLBodyElement|game.core.Entity} */
+  engine.core.Camera.prototype._initialized = true;
+  /** @private {!engine.core.Entity} */
+  this.root_ = engine.core.Main.Root;
+  /** @private {!engine.core.Window} */
+  this.window_ = new engine.core.Window();
+  /** @private {Element|HTMLBodyElement|engine.core.Entity} */
   this.rootLocation_ = opt_rootLocation || document.body;
   /**
    * In the physics loop this is the last time the loop ran in seconds.
@@ -51,29 +52,29 @@ game.core.Main = function(opt_rootLocation) {
  *
  * @type {number}
  */
-game.core.Main.FPS = 60;
+engine.core.Main.FPS = 60;
 
 
 /**
  * The framerate our game runs off on.
  *
- * @type {game.core.Entity}
+ * @type {engine.core.Entity}
  */
-game.core.Main.Root = new game.core.Root();
+engine.core.Main.Root = new engine.core.Root();
 
 
 /**
  * Init function
  */
-game.core.Main.prototype.init = function() {
-  var RESIZE = game.core.Window.RESIZE_LISTENER_EVENT_NAME;
+engine.core.Main.prototype.init = function() {
+  var RESIZE = engine.core.Window.RESIZE_LISTENER_EVENT_NAME;
   this.window_.registerListener(RESIZE, function() {
     this.root_.setPosition(this.window_.getPosition());
     this.root_.setSize(this.window_.getWidth(), this.window_.getHeight());
   }.bind(this), true);
 
 
-  game.core.Entity.forEach(function(entity) {
+  engine.core.Entity.forEach(function(entity) {
     entity.init();
   });
 
@@ -88,9 +89,9 @@ game.core.Main.prototype.init = function() {
 /**
  * Runs render loop.
  */
-game.core.Main.prototype.renderLoop = function() {
+engine.core.Main.prototype.renderLoop = function() {
   window.requestAnimationFrame(this.renderLoop.bind(this));
-  game.core.Entity.forEach(function(entity) {
+  engine.core.Entity.forEach(function(entity) {
     entity.draw();
   });
 };
@@ -99,20 +100,20 @@ game.core.Main.prototype.renderLoop = function() {
 /**
  * Runs physics loop.
  */
-game.core.Main.prototype.physicsLoop = function() {
+engine.core.Main.prototype.physicsLoop = function() {
   var currTime = +new Date() / 1000;
   if (!this.lastTimeRan_) this.lastTimeRan_ = +new Date() / 1000;
   if (!this.physicsRemainderTime_) this.physicsRemainderTime_ = 0;
 
   var dt = (currTime - this.lastTimeRan_) + this.physicsRemainderTime_;
-  var dtstep = 1 / game.core.Main.FPS;
+  var dtstep = 1 / engine.core.Main.FPS;
   var steps = Math.floor(dt / dtstep);
 
   this.physicsRemainderTime_ = dt - dtstep * steps;
 
   // Update loop, we might have multiple steps per iteration.
   for (var step = 0; step < steps; step++) {
-    game.core.Entity.forEach(function(entity) {
+    engine.core.Entity.forEach(function(entity) {
       entity.update(dtstep, this.globalTick_);
     }, this);
     this.tick(this.globalTick_++);
@@ -132,4 +133,4 @@ game.core.Main.prototype.physicsLoop = function() {
  *
  * @param {numbet} tick
  */
-game.core.Main.prototype.tick = function(tick) {};
+engine.core.Main.prototype.tick = function(tick) {};
