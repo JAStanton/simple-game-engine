@@ -17,8 +17,9 @@ game.Main = function() {
   this.width = 1920;
   this.height = 802;
 
-  /** @private {!game.Board} */
-  this.gameboard_ = new engine.core.Board().
+  /** @private {!engine.core.Entity} */
+  this.gameboard_ = new engine.core.Entity('board').
+      mixin('shape').
       setRectangle(new engine.core.math.Vector(), this.width, this.height).
       attach(engine.core.Main.Root);
 
@@ -42,7 +43,7 @@ game.Main = function() {
   this.player_.registerCollidesWith('walls', 'balls', 'shapes');
 
   /** @private {!engine.core.Entity} */
-  this.camera_ = new engine.core.Camera().watch(this.player_);
+  this.camera_ = new engine.core.Camera(this.gameboard_).watch(this.player_);
 
   // Kicks things off
   this.init();

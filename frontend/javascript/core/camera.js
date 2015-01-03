@@ -9,15 +9,16 @@ goog.require('engine.core.Root');
 /**
  * Camera singleton class, the camera is responsible for updating the viewport.
  *
+ * @param {engine.core.Entity} gameBoard The gameboard to move the camera on.
  * @constructor
  */
-engine.core.Camera = function() {
+engine.core.Camera = function(gameBoard) {
   if (engine.core.Camera.prototype._singletonInstance) {
     return engine.core.Camera.prototype._singletonInstance;
   }
   engine.core.Camera.prototype._singletonInstance = this;
-  /** @private {!game.Board}*/
-  this.board_ = new engine.core.Board();
+  /** @private {!engine.core.Entity}*/
+  this.board_ = gameBoard;
   /** @private {!engine.core.Root}*/
   this.root_ = new engine.core.Root();
   /** @private {!engine.core.Camera.Axis} */
