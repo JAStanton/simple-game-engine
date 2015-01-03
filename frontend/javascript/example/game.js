@@ -22,19 +22,16 @@ game.Main = function() {
       setRectangle(new game.core.math.Vector(), this.width, this.height).
       attach(game.core.Main.Root);
 
-  this.addPlatform('wall-0', 0, 0, this.width, 5);
-  this.addPlatform('wall-1', 0, 0, 5, this.height);
-  this.addPlatform('wall-2', this.height - 5, 0, this.width, 5);
-  this.addPlatform('wall-3', 0, this.width - 5, 5, this.height);
+  this.addPlatform(0, 0, this.width, 5);
+  this.addPlatform(0, 0, 5, this.height);
+  this.addPlatform(this.height - 5, 0, this.width, 5);
+  this.addPlatform(0, this.width - 5, 5, this.height);
 
-  this.addRandomBall('ball-0');
-  this.addRandomBall('ball-1');
-
-  this.addRandomShape('shape-0');
-  this.addRandomShape('shape-1');
-  this.addRandomShape('shape-2');
-  this.addRandomShape('shape-3');
-  this.addRandomShape('shape-4');
+  // Add 10 random balls and shapes.
+  for (var i = 0; i < 10; i++) {
+    this.addRandomBall();
+    this.addRandomShape();
+  }
 
   /** @private {!game.core.Entity} */
   this.player_ = new game.core.Entity().
@@ -47,10 +44,7 @@ game.Main = function() {
       attach(this.gameboard_);
 
   this.player_.init();
-  this.player_.registerCollidesWith(
-      'wall-0', 'wall-1', 'wall-2', 'wall-3',
-      'ball-0', 'ball-1',
-      'shape-0', 'shape-1', 'shape-2', 'shape-3', 'shape-4');
+  this.player_.registerCollidesWith('walls', 'balls', 'shapes');
 
   /** @private {!game.core.Entity} */
   this.camera_ = new game.core.Camera().watch(this.player_);
@@ -61,14 +55,13 @@ game.core.helper.inherit(game.Main, game.core.Main);
 /**
  * Adds a platform
  *
- * @param {string} name
  * @param {number} top
  * @param {number} left
  * @param {number} width
  * @param {number} height
  */
-game.Main.prototype.addPlatform = function(name, top, left, width, height) {
-  var wall = new game.core.Entity(name).
+game.Main.prototype.addPlatform = function(top, left, width, height) {
+  var wall = new game.core.Entity('walls').
       addClass('boundary').
       mixin('shape', 'physical').
       setFillColor('black').
@@ -80,14 +73,12 @@ game.Main.prototype.addPlatform = function(name, top, left, width, height) {
 
 /**
  * Adds a randomly placed ball
- *
- * @param {string} name
 */
-game.Main.prototype.addRandomBall = function(name) {
+game.Main.prototype.addRandomBall = function() {
   var radius = game.core.helper.getRandomInt(10, 75);
   var x = game.core.helper.getRandomInt(radius, this.width - radius);
   var y = game.core.helper.getRandomInt(radius, this.height - radius);
-  var ball_ = new game.core.Entity(name).
+  var ball_ = new game.core.Entity('balls').
       mixin('shape', 'physical').
       setFillColor(Please.make_color()).
       setMass(0).
@@ -100,10 +91,8 @@ game.Main.prototype.addRandomBall = function(name) {
 
 /**
  * Adds a randomly placed ball
- *
- * @param {string} name
 */
-game.Main.prototype.addRandomShape = function(name) {
+game.Main.prototype.addRandomShape = function() {
   var polygon = [];
   var radius = game.core.helper.getRandomInt(10, 75);
   var centerX = game.core.helper.getRandomInt(0, this.width - radius * 2);
@@ -117,7 +106,7 @@ game.Main.prototype.addRandomShape = function(name) {
     polygon.push(new game.core.math.Vector(x, y));
   }
 
-  var shape_ = new game.core.Entity(name).
+  var shape_ = new game.core.Entity('shapes').
       mixin('shape', 'physical').
       setFillColor(Please.make_color()).
       setMass(0).

@@ -43,7 +43,10 @@ game.core.Entity = function(opt_name) {
 
   game.core.Entity.All.push(this);
   if (!_.isUndefined(opt_name)) {
-    game.core.Entity.ByName[opt_name] = this;
+    if (!_.isArray(game.core.Entity.ByName[opt_name])) {
+      game.core.Entity.ByName[opt_name] = [];
+    }
+    game.core.Entity.ByName[opt_name].push(this);
     this.addClass(opt_name);
   }
 };
@@ -58,9 +61,10 @@ game.core.Entity.All = [];
 
 
 /**
- * All of the entities by name.
+ * Entities by name if a name was provided. More than one entity can have the
+ * same name.
  *
- * @type {!Object.<string, !game.core.Entity>}
+ * @type {!Object.<string, !Array.<!game.core.Entity>>}
  */
 game.core.Entity.ByName = {};
 

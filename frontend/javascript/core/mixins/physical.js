@@ -104,34 +104,37 @@ game.mixins.Physical = function() {
 
       // TODO filter colliders by what's nearby.
       _.each(colliders, function(callback, name) {
-        var entity = game.core.Entity.ByName[name];
-        if (_.isUndefined(entity)) {
-          console.warn('Entity registered as a collider but doesnt exist.');
-          return;
-        }
+        var entities = game.core.Entity.ByName[name];
+        for (var i = 0; i < entities.length; i++) {
+          var entity = entities[i];
+          if (_.isUndefined(entity)) {
+            console.warn('Entity registered as a collider but doesnt exist.');
+            return;
+          }
 
-        var response = new game.core.math.collision.Response();
-        var didCollide = false;
+          var response = new game.core.math.collision.Response();
+          var didCollide = false;
 
-        if ((this.type == ShapeType.POLYGON ||
-            this.type == ShapeType.RECTANGLE) &&
-            (entity.type == ShapeType.POLYGON ||
-            entity.type == ShapeType.RECTANGLE)) {
-          didCollide = collision.testPolygonPolygon(this, entity, response);
-        } else if (this.type == ShapeType.CIRCLE &&
-            (entity.type == ShapeType.POLYGON ||
-            entity.type == ShapeType.RECTANGLE)) {
-          didCollide = collision.testCirclePolygon(this, entity, response);
-        } else if ((this.type == ShapeType.POLYGON ||
-            this.type == ShapeType.RECTANGLE) &&
-            entity.type == ShapeType.CIRCLE) {
-          didCollide = collision.testPolygonCircle(this, entity, response);
-        }
+          if ((this.type == ShapeType.POLYGON ||
+              this.type == ShapeType.RECTANGLE) &&
+              (entity.type == ShapeType.POLYGON ||
+              entity.type == ShapeType.RECTANGLE)) {
+            didCollide = collision.testPolygonPolygon(this, entity, response);
+          } else if (this.type == ShapeType.CIRCLE &&
+              (entity.type == ShapeType.POLYGON ||
+              entity.type == ShapeType.RECTANGLE)) {
+            didCollide = collision.testCirclePolygon(this, entity, response);
+          } else if ((this.type == ShapeType.POLYGON ||
+              this.type == ShapeType.RECTANGLE) &&
+              entity.type == ShapeType.CIRCLE) {
+            didCollide = collision.testPolygonCircle(this, entity, response);
+          }
 
-        if (didCollide) {
-          resolveCollisions.call(this, response, delta);
-          if (_.isFunction(callback)) {
-            callback(entity);
+          if (didCollide) {
+            resolveCollisions.call(this, response, delta);
+            if (_.isFunction(callback)) {
+              callback(entity);
+            }
           }
         }
       }, this);
