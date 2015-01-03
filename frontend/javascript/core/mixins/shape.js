@@ -64,6 +64,15 @@ game.mixins.Shape = function() {
 
     fillColor_: 'black',
 
+    setFillColor: function(color) {
+      this.fillColor_ = color;
+      return this;
+    },
+
+    getFillColor: function() {
+      return this.fillColor_;
+    },
+
     setPolygon: function(opt_pos, opt_points) {
       this.type = game.mixins.Shape.Type.POLYGON;
       if (opt_pos) {
@@ -202,6 +211,10 @@ game.mixins.Shape = function() {
       } else {
         svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         this.el.appendChild(svg);
+      }
+
+      if (this.type == game.mixins.Shape.Type.RECTANGLE) {
+        this.el.style.backgroundColor = this.fillColor_;
       }
 
       if (this.type == game.mixins.Shape.Type.POLYGON) {

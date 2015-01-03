@@ -71,6 +71,7 @@ game.Main.prototype.addPlatform = function(name, top, left, width, height) {
   var wall = new game.core.Entity(name).
       addClass('boundary').
       mixin('shape', 'physical').
+      setFillColor('black').
       setRectangle(new game.core.math.Vector(left, top), width, height).
       attach(this.gameboard_);
   wall.init();
@@ -88,6 +89,7 @@ game.Main.prototype.addRandomBall = function(name) {
   var y = game.core.helper.getRandomInt(radius, this.height - radius);
   var ball_ = new game.core.Entity(name).
       mixin('shape', 'physical').
+      setFillColor(Please.make_color()).
       setMass(0).
       setCircle(new game.core.math.Vector(x, y), radius).
       attach(this.gameboard_);
@@ -117,6 +119,7 @@ game.Main.prototype.addRandomShape = function(name) {
 
   var shape_ = new game.core.Entity(name).
       mixin('shape', 'physical').
+      setFillColor(Please.make_color()).
       setMass(0).
       setPolygon(new game.core.math.Vector(centerX, centerY), polygon).
       attach(this.gameboard_);
