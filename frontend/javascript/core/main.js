@@ -41,9 +41,6 @@ engine.core.Main = function(opt_rootLocation) {
    * @private {number}
    */
   this.globalTick_ = 0;
-
-  // Initialize.
-  this.init();
 };
 
 

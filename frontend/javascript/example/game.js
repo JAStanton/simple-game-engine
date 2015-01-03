@@ -34,20 +34,18 @@ game.Main = function() {
   }
 
   /** @private {!engine.core.Entity} */
-  this.player_ = new engine.core.Entity().
-      addClass('player').
+  this.player_ = new engine.core.Entity('player').
       mixin('fourway', 'shape', 'physical').
       setMass(1).
-      setBouncyness(0.4).
-      setFriction(0.1).
       setRectangle(new engine.core.math.Vector(50, 50), 40, 40).
       attach(this.gameboard_);
-
-  this.player_.init();
   this.player_.registerCollidesWith('walls', 'balls', 'shapes');
 
   /** @private {!engine.core.Entity} */
   this.camera_ = new engine.core.Camera().watch(this.player_);
+
+  // Kicks things off
+  this.init();
 };
 engine.core.helper.inherit(game.Main, engine.core.Main);
 
@@ -66,7 +64,6 @@ game.Main.prototype.addPlatform = function(top, left, width, height) {
       setFillColor('black').
       setRectangle(new engine.core.math.Vector(left, top), width, height).
       attach(this.gameboard_);
-  wall.init();
 };
 
 
@@ -83,8 +80,6 @@ game.Main.prototype.addRandomBall = function() {
       setMass(0).
       setCircle(new engine.core.math.Vector(x, y), radius).
       attach(this.gameboard_);
-
-  ball_.init();
 };
 
 
@@ -111,8 +106,6 @@ game.Main.prototype.addRandomShape = function() {
       setMass(0).
       setPolygon(new engine.core.math.Vector(centerX, centerY), polygon).
       attach(this.gameboard_);
-
-  shape_.init();
 };
 
 var main = new game.Main();
